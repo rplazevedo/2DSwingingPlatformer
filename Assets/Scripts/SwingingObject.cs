@@ -25,24 +25,16 @@ public class SwingingBlock : MonoBehaviour
 
     private void Update()
     {
-        var connectedAnchor = distanceJoint.connectedAnchor;
-        var anchor = distanceJoint.anchor;
-        DrawLine();
+        // TODO: make the rope connect the actual anchor point on the edge of the sprite
+        var connectedAnchor = new Vector3 (distanceJoint.connectedAnchor.x, distanceJoint.connectedAnchor.y, 0);
+        var anchor = new Vector3(distanceJoint.anchor.x, distanceJoint.anchor.y, 0);
+        DrawLine(transform.position, connectedAnchor);
     }
     //For drawing line in the world space, provide the x,y,z values
 
-    void DrawLine()
+    void DrawLine(Vector3 anchor, Vector3 connectedAnchor)
     {
-        lineRenderer.positionCount = vertexCount + 1;
-
-        Vector3[] positions = new Vector3[vertexCount + 1];
-
-        for (int i = 0; i <= vertexCount; i++)
-        {
-            float t = i / (float)vertexCount;
-            positions[i] = Vector3.Lerp(distanceJoint.connectedBody.transform.position, transform.position, t);
-        }
-
-        lineRenderer.SetPositions(positions);
+        lineRenderer.SetPosition(0, new Vector3(anchor.x, anchor.y, 0));
+        lineRenderer.SetPosition(1, new Vector3(connectedAnchor.x, connectedAnchor.y, 0));
     }
 }
