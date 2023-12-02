@@ -23,13 +23,11 @@ public class SwingingBlock : MonoBehaviour
 
     private void Update()
     {
-        // TODO: make the rope connect the actual anchor point on the edge of the sprite
         var connectedAnchor = new Vector3 (distanceJoint.connectedAnchor.x, distanceJoint.connectedAnchor.y, 0);
         var anchor = new Vector3(distanceJoint.anchor.x, distanceJoint.anchor.y, 0);
         var world_anchor = transform.TransformPoint(anchor);
         DrawLine(world_anchor, connectedAnchor);
     }
-    //For drawing line in the world space, provide the x,y,z values
 
     void DrawLine(Vector3 anchor, Vector3 connectedAnchor)
     {
