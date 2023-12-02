@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    private Camera cam;
+
     [Header("Movement")]
     [SerializeField] private float speed = 5;
     [SerializeField] private float jumpForce = 10;
@@ -12,13 +14,44 @@ public class Player : MonoBehaviour
     [SerializeField] private Rigidbody2D body;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Grappling")]
+    [SerializeField] float maxRange = 50f;
+    [SerializeField] bool infiniteRange = false;
+    private bool _isGrappled;
+    private LineRenderer lineRenderer;
+    private DistanceJoint2D distanceJoint;
+
+    private void Awake()
+    {
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.startColor = Color.black;
+        lineRenderer.endColor = Color.black;
+        lineRenderer.startWidth = 0.02f;
+        lineRenderer.endWidth = .02f;
+        lineRenderer.positionCount = 2;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.useWorldSpace = true;
+
+        distanceJoint = GetComponent<DistanceJoint2D>();
+        distanceJoint.anchor = Vector2.zero;
+        distanceJoint.enabled = false;
+        lineRenderer.enabled = false;
+        _isGrappled = false;
+        cam = Camera.main;
+    }
+
     void Update()
     {
-        Move();
+        if (!_isGrappled)
+        { 
+            Move();
+        }
+        
+        Grapple();
     }
 
     private void Move()
-    {
+    {   
         HorizontalMovement();
 
         if (ShouldJump())
@@ -49,4 +82,69 @@ public class Player : MonoBehaviour
     {
         body.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
+
+    private void Grapple()
+    {   
+        // TODO: Refactor component functions
+        if (CanGrapple())
+        {
+            FireGrappleOnClick();
+        }
+        else if (_isGrappled)
+        {
+            DrawLine();
+            DetachGrappleOnClick();
+            
+        }
+    }
+
+    private bool CanGrapple()
+    {
+        return !_isGrappled;
+    }
+
+    private void FireGrappleOnClick()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            FireGrapple();
+        }
+    }
+
+    private void FireGrapple()
+    {   
+        var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, (mouseCoord - transform.position));
+        RaycastHit2D firstHit = hits[1];
+        if (Vector2.Distance(transform.position, firstHit.point) < maxRange | infiniteRange)
+        {
+            // TODO?: Incorporate target physics
+            distanceJoint.enabled = true;
+            lineRenderer.enabled = true;
+            distanceJoint.connectedAnchor = firstHit.point;
+            _isGrappled = true;
+            Debug.Log(firstHit.point.ToString());
+        }
+    }
+
+    private void DetachGrappleOnClick()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            distanceJoint.enabled = false;
+            lineRenderer.enabled = false;
+            _isGrappled = false;
+        }
+    }
+
+    void DrawLine()
+    {
+        var connectedAnchor = new Vector3(distanceJoint.connectedAnchor.x, distanceJoint.connectedAnchor.y, 0);
+        var anchor = new Vector3(distanceJoint.anchor.x, distanceJoint.anchor.y, 0);
+        var world_anchor = transform.TransformPoint(anchor);
+        var world_connectedAnchor = transform.TransformPoint(connectedAnchor);
+        lineRenderer.SetPosition(0, new Vector3(world_anchor.x, world_anchor.y, 0));
+        lineRenderer.SetPosition(1, new Vector3(connectedAnchor.x, connectedAnchor.y, 0));
+    }
+
 }
