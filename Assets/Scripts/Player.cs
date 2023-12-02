@@ -3,30 +3,34 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float speed = 5;
-    public float jumpForce = 10;
+    [Header("Movement")]
+    [SerializeField] private float speed = 5;
+    [SerializeField] private float jumpForce = 10;
 
-    public float raycastLength = 0.1f;
-    public Transform groundCheck;
-    public float groundCheckRadius;
-    public LayerMask groundLayer;
-
-    [SerializeField]
-    private Collider2D playerCollider;
-
-    [SerializeField]
-    private Rigidbody2D body;
+    [Header("Collision")]
+    [SerializeField] private Collider2D playerCollider;
+    [SerializeField] private Rigidbody2D body;
+    [SerializeField] private LayerMask groundLayer;
 
     void Update()
     {
-        //TODO Refactoring?
-        var xSpeed = Input.GetAxis(Inputs.Horizontal.ToString()) * speed;
-        body.velocity = new Vector2(xSpeed, body.velocity.y);
+        Move();
+    }
+
+    private void Move()
+    {
+        HorizontalMovement();
 
         if (ShouldJump())
         {
             Jump();
         }
+    }
+
+    private void HorizontalMovement()
+    {
+        var xSpeed = Input.GetAxis(Inputs.Horizontal.ToString()) * speed;
+        body.velocity = new Vector2(xSpeed, body.velocity.y);
     }
 
     private bool ShouldJump()
@@ -37,6 +41,6 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
-        body.AddForce(Vector3.up * 5, ForceMode2D.Impulse);
+        body.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 }

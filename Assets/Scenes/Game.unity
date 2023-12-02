@@ -398,15 +398,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  jumpForce: 10
-  raycastLength: 0.1
-  groundCheck: {fileID: 319544647}
-  groundCheckRadius: 0.2
+  jumpForce: 5
+  playerCollider: {fileID: 1862080532}
+  body: {fileID: 1862080533}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  playerCollider: {fileID: 1862080532}
-  body: {fileID: 1862080533}
 --- !u!61 &1862080532
 BoxCollider2D:
   m_ObjectHideFlags: 0
