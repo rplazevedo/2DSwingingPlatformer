@@ -35,7 +35,28 @@ public class Player : MonoBehaviour
 
     private bool ShouldJump()
     {
-        var isGrounded = Physics2D.IsTouchingLayers(playerCollider, groundLayer);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, Vector2.down);
+
+        if(hits.Length < 1)
+        {
+            return false;
+        }
+
+        var ground = hits[0];
+
+        var isGrounded = false;
+        if (ground.distance < 0.15)
+        {
+            isGrounded = true;
+
+        }
+        Debug.Log(isGrounded);
+        //foreach(var hit in hits)
+        //{
+        //    Debug.Log(hit.ToString());
+        //}
+
+
         return Input.GetButtonDown(Inputs.Jump.ToString()) && isGrounded;
     }
 
