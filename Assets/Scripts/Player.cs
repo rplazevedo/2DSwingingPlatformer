@@ -23,8 +23,8 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        SetupLineRenderer()
-        SetupDistanceJoint()
+        SetupLineRenderer();
+        SetupDistanceJoint();
 
         if (infiniteRange)
         {
