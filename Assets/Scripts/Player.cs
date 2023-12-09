@@ -115,14 +115,17 @@ public class Player : MonoBehaviour
     private void FireGrapple()
     {   
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, (mouseCoord - transform.position));
-        RaycastHit2D firstHit = hits[1];
-        if (Vector2.Distance(transform.position, firstHit.point) < maxRange | infiniteRange)
+        if (infiniteRange)
+        {
+            maxRange = 1000000;
+        }
+        RaycastHit2D hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange);
+        if (hit)
         {
             // TODO?: Incorporate target physics
             distanceJoint.enabled = true;
             lineRenderer.enabled = true;
-            distanceJoint.connectedAnchor = firstHit.point;
+            distanceJoint.connectedAnchor = hit.point;
             _isGrappled = true;
         }
     }
