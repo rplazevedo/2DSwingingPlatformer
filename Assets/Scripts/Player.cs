@@ -1,5 +1,4 @@
 using Assets.Scripts.Input;
-using Assets.Scripts.UnityEnums;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -30,7 +29,7 @@ public class Player : MonoBehaviour
 
     private void HorizontalMovement()
     {
-        var xSpeed = Input.GetAxis(Inputs.Horizontal.ToString()) * speed;
+        var xSpeed = UserInput.GetHorizontalValue() * speed;
         body.velocity = new Vector2(xSpeed, body.velocity.y);
     }
 

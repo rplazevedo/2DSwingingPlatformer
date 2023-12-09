@@ -8,5 +8,10 @@ namespace Assets.Scripts.Input
         {
             return UnityEngine.Input.GetButtonDown(Inputs.Jump.ToString());
         }
+
+        public static float GetHorizontalValue()
+        {
+            return UnityEngine.Input.GetAxis(Inputs.Horizontal.ToString());
+        }
     }
 }
