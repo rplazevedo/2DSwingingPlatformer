@@ -14,5 +14,10 @@
         {
             return UnityEngine.Input.GetAxis(Horizontal);
         }
+
+        public static float GetHorizontalValue()
+        {
+            return UnityEngine.Input.GetAxis(Inputs.Horizontal.ToString());
+        }
     }
 }
