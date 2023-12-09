@@ -2,7 +2,7 @@
 {
     public static class UserInput
     {
-        public static string Horizontal = "Horizonal";
+        public static string Horizontal = "Horizontal";
         public static string Jump = "Jump";
 
         public static bool IsPressingJump()
