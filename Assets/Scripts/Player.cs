@@ -1,3 +1,4 @@
+using Assets.Scripts.Input;
 using Assets.Scripts.UnityEnums;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ public class Player : MonoBehaviour
 
     private bool ShouldJump()
     {
-        return Input.GetButtonDown(Inputs.Jump.ToString()) && IsGrounded();
+        return UserInput.IsPressingJump() && IsGrounded();
     }
 
     private bool IsGrounded()
