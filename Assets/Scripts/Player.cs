@@ -23,6 +23,19 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
+        SetupLineRenderer()
+        SetupDistanceJoint()
+
+        if (infiniteRange)
+        {
+            maxRange = 1000000;
+        }
+        _isGrappled = false;
+        cam = Camera.main;
+    }
+
+    private void SetupLineRenderer()
+    {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.startColor = Color.black;
         lineRenderer.endColor = Color.black;
@@ -32,13 +45,13 @@ public class Player : MonoBehaviour
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.useWorldSpace = true;
         lineRenderer.enabled = false;
+    }
 
+    private void SetupDistanceJoint()
+    {
         distanceJoint = GetComponent<DistanceJoint2D>();
         distanceJoint.anchor = Vector2.zero;
         distanceJoint.enabled = false;
-
-        _isGrappled = false;
-        cam = Camera.main;
     }
 
     void Update()
@@ -86,16 +99,14 @@ public class Player : MonoBehaviour
 
     private void Grapple()
     {   
-        // TODO: Refactor component functions
-        if (CanGrapple())
+        if (CanGrapple() && Input.GetMouseButtonDown(0))
         {
-            FireGrappleOnClick();
+            FireGrapple();
         }
         else if (_isGrappled)
         {
             DrawLine();
-            DetachGrappleOnClick();
-            
+            DetachGrappleOnClick();        
         }
     }
 
@@ -104,30 +115,28 @@ public class Player : MonoBehaviour
         return !_isGrappled;
     }
 
-    private void FireGrappleOnClick()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            FireGrapple();
-        }
-    }
+
 
     private void FireGrapple()
     {   
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
-        if (infiniteRange)
-        {
-            maxRange = 1000000;
-        }
         RaycastHit2D hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange);
         if (hit)
         {
-            // TODO?: Incorporate target physics
             distanceJoint.enabled = true;
             lineRenderer.enabled = true;
             distanceJoint.connectedAnchor = hit.point;
             _isGrappled = true;
         }
+    }
+
+    private void DrawLine()
+    {
+        var connectedAnchor = new Vector3(distanceJoint.connectedAnchor.x, distanceJoint.connectedAnchor.y, 0);
+        var anchor = new Vector3(distanceJoint.anchor.x, distanceJoint.anchor.y, 0);
+        var world_anchor = transform.TransformPoint(anchor);
+        lineRenderer.SetPosition(0, world_anchor);
+        lineRenderer.SetPosition(1, connectedAnchor);
     }
 
     private void DetachGrappleOnClick()
@@ -140,13 +149,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    void DrawLine()
-    {
-        var connectedAnchor = new Vector3(distanceJoint.connectedAnchor.x, distanceJoint.connectedAnchor.y, 0);
-        var anchor = new Vector3(distanceJoint.anchor.x, distanceJoint.anchor.y, 0);
-        var world_anchor = transform.TransformPoint(anchor);
-        lineRenderer.SetPosition(0, new Vector3(world_anchor.x, world_anchor.y, 0));
-        lineRenderer.SetPosition(1, new Vector3(connectedAnchor.x, connectedAnchor.y, 0));
-    }
+
 
 }
