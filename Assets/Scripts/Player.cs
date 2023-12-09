@@ -1,4 +1,4 @@
-using Assets.Scripts.UnityEnums;
+using Assets.Scripts.Input;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -29,14 +29,20 @@ public class Player : MonoBehaviour
 
     private void HorizontalMovement()
     {
-        var xSpeed = Input.GetAxis(Inputs.Horizontal.ToString()) * speed;
+        var xSpeed = UserInput.GetHorizontalValue() * speed;
         body.velocity = new Vector2(xSpeed, body.velocity.y);
     }
 
     private bool ShouldJump()
     {
-        var isGrounded = Physics2D.IsTouchingLayers(playerCollider, groundLayer);
-        return Input.GetButtonDown(Inputs.Jump.ToString()) && isGrounded;
+        return UserInput.IsPressingJump() && IsGrounded();
+    }
+
+    private bool IsGrounded()
+    {
+        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
+
+        return collisionHit.collider != null;
     }
 
     private void Jump()
