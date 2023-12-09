@@ -1,17 +1,18 @@
-﻿using Assets.Scripts.UnityEnums;
-
-namespace Assets.Scripts.Input
+﻿namespace Assets.Scripts.Input
 {
     public static class UserInput
     {
+        public static string Horizontal = "Horizonal";
+        public static string Jump = "Jump";
+
         public static bool IsPressingJump()
         {
-            return UnityEngine.Input.GetButtonDown(Inputs.Jump);
+            return UnityEngine.Input.GetButtonDown(Jump);
         }
 
         public static float GetHorizontalValue()
         {
-            return UnityEngine.Input.GetAxis(Inputs.Horizontal);
+            return UnityEngine.Input.GetAxis(Horizontal);
         }
     }
 }
