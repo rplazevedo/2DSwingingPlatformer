@@ -38,29 +38,17 @@ public class Player : MonoBehaviour
 
         var currentPosition = transform.position;
         var targetPoint = new Vector3(currentPosition.x, currentPosition.y - 0.15f, currentPosition.z); 
-        var collisionHit = Physics2D.BoxCast(currentPosition, playerCollider.bounds.size, 0f, Vector2.down, 1f);
+        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
 
 
 
-        if(collisionHit.collider == null)
-        {
-            Debug.Log("No hit!");
-        }
-        else
-        {
-            Debug.Log("Hit!");
-        }
+        var isGrounded = collisionHit.collider != null;
         //if(collisionHit.Length < 1)
         //{
         //    return false;
         //}
 
         //var ground = hits[0];
-
-        var isGrounded = false;
-        //if (ground.distance < 0.15)
-        //{
-            isGrounded = true;
 
         //}
 
