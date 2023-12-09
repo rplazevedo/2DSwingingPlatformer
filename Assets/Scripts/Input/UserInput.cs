@@ -1,4 +1,6 @@
-﻿namespace Assets.Scripts.Input
+﻿using Assets.Scripts.UnityEnums;
+
+namespace Assets.Scripts.Input
 {
     public static class UserInput
     {
