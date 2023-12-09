@@ -31,11 +31,12 @@ public class Player : MonoBehaviour
         lineRenderer.positionCount = 2;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.useWorldSpace = true;
+        lineRenderer.enabled = false;
 
         distanceJoint = GetComponent<DistanceJoint2D>();
         distanceJoint.anchor = Vector2.zero;
         distanceJoint.enabled = false;
-        lineRenderer.enabled = false;
+
         _isGrappled = false;
         cam = Camera.main;
     }
@@ -123,7 +124,6 @@ public class Player : MonoBehaviour
             lineRenderer.enabled = true;
             distanceJoint.connectedAnchor = firstHit.point;
             _isGrappled = true;
-            Debug.Log(firstHit.point.ToString());
         }
     }
 
@@ -142,7 +142,6 @@ public class Player : MonoBehaviour
         var connectedAnchor = new Vector3(distanceJoint.connectedAnchor.x, distanceJoint.connectedAnchor.y, 0);
         var anchor = new Vector3(distanceJoint.anchor.x, distanceJoint.anchor.y, 0);
         var world_anchor = transform.TransformPoint(anchor);
-        var world_connectedAnchor = transform.TransformPoint(connectedAnchor);
         lineRenderer.SetPosition(0, new Vector3(world_anchor.x, world_anchor.y, 0));
         lineRenderer.SetPosition(1, new Vector3(connectedAnchor.x, connectedAnchor.y, 0));
     }
