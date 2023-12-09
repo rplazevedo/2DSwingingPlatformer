@@ -35,24 +35,14 @@ public class Player : MonoBehaviour
 
     private bool ShouldJump()
     {
+        return Input.GetButtonDown(Inputs.Jump.ToString()) && IsGrounded();
+    }
 
-        var currentPosition = transform.position;
-        var targetPoint = new Vector3(currentPosition.x, currentPosition.y - 0.15f, currentPosition.z); 
+    private bool IsGrounded()
+    {
         var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
 
-
-
-        var isGrounded = collisionHit.collider != null;
-        //if(collisionHit.Length < 1)
-        //{
-        //    return false;
-        //}
-
-        //var ground = hits[0];
-
-        //}
-
-        return Input.GetButtonDown(Inputs.Jump.ToString()) && isGrounded;
+        return collisionHit.collider != null;
     }
 
     private void Jump()
