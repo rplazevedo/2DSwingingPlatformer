@@ -6,12 +6,12 @@ namespace Assets.Scripts.Input
     {
         public static bool IsPressingJump()
         {
-            return UnityEngine.Input.GetButtonDown(Inputs.Jump.ToString());
+            return UnityEngine.Input.GetButtonDown(Inputs.Jump);
         }
 
         public static float GetHorizontalValue()
         {
-            return UnityEngine.Input.GetAxis(Inputs.Horizontal.ToString());
+            return UnityEngine.Input.GetAxis(Inputs.Horizontal);
         }
     }
 }

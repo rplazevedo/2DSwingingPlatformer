@@ -1,8 +1,8 @@
 ﻿namespace Assets.Scripts.UnityEnums
 {
-    internal enum Inputs
+    internal static class Inputs
     {
-        Horizontal = 0,
-        Jump = 1
+        public static string Horizontal = "Horizonal";
+        public static string Jump = "Jump";
     }
 }
