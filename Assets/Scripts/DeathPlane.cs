@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
+using Assets.Scripts.UnityEnums;
 using UnityEngine;
 
 public class DeathPlane : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        
+        if (other.CompareTag(Tags.Player.ToString()))
+        {
+            PlayerDeath();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    void PlayerDeath()
     {
-        
+        //TODO Raised task under 2023-12-09 to decide what we do here
+        Debug.Log("The player died!");
     }
 }
