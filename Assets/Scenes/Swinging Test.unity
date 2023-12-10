@@ -714,6 +714,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   maxRange: 50
+  minRange: 0.2
   infiniteRange: 1
   grappleReelSpeed: 5
 --- !u!232 &1862080532

@@ -21,9 +21,11 @@ public class Player : MonoBehaviour
     }
 
     [Header("Grappling")]
-    [SerializeField] float maxRange = 50f;
-    [SerializeField] bool infiniteRange = false;
-    [SerializeField] float grappleReelSpeed = 5f;
+    [SerializeField] private float maxRange = 50f;
+    [SerializeField] private float minRange = 0.2f;
+    [SerializeField] private bool infiniteRange = false;
+    [SerializeField] private float grappleReelSpeed = 5f;
+
     private bool _isGrappled;
     private LineRenderer lineRenderer;
     private DistanceJoint2D distanceJoint;
@@ -151,11 +153,35 @@ public class Player : MonoBehaviour
         lineRenderer.SetPosition(1, connectedAnchor);
     }
 
+
+
+
     private void ReelGrapple()
     {
         var grappleVerticalSpeed = UserInput.GetVerticalValue() * grappleReelSpeed;
-        distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
+        if (CanReelGrapple(grappleVerticalSpeed))
+        {
+            distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
+        }
+
+
     }
+
+    private bool CanReelGrapple(float grappleVerticalSpeed)
+    {
+
+        return ((grappleVerticalSpeed > 0 && NoGrappleColision()) || (grappleVerticalSpeed < 0 && distanceJoint.distance < maxRange));
+    }
+
+
+    private bool NoGrappleColision()
+    {
+        // TODO: Change to OnCollisionEnter
+        Vector2 directionToGrapplePoint = distanceJoint.connectedAnchor - distanceJoint.anchor;
+        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size * 0.9f, 0f, directionToGrapplePoint, minRange);
+        return collisionHit.collider == null;
+    }
+
 
     private void DetachGrappleOnClick()
     {
