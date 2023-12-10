@@ -4,8 +4,6 @@ public class SwingingBlock : MonoBehaviour
 {   
     private LineRenderer lineRenderer;
     private DistanceJoint2D distanceJoint;
-    [SerializeField]
-    private int vertexCount = 20;
 
     private void Awake()
     {
