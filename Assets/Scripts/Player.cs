@@ -58,6 +58,7 @@ public class Player : MonoBehaviour
         distanceJoint = GetComponent<DistanceJoint2D>();
         distanceJoint.anchor = Vector2.zero;
         distanceJoint.enabled = false;
+        distanceJoint.maxDistanceOnly = true;
     }
 
     void Update()
