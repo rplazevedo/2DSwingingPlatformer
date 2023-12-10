@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     [Header("Grappling")]
     [SerializeField] float maxRange = 50f;
     [SerializeField] bool infiniteRange = false;
+    [SerializeField] float grappleReelSpeed = 5f;
     private bool _isGrappled;
     private LineRenderer lineRenderer;
     private DistanceJoint2D distanceJoint;
@@ -118,6 +119,7 @@ public class Player : MonoBehaviour
         else if (_isGrappled)
         {
             DrawLine();
+            ReelGrapple();
             DetachGrappleOnClick();        
         }
     }
@@ -147,6 +149,12 @@ public class Player : MonoBehaviour
         var world_anchor = transform.TransformPoint(anchor);
         lineRenderer.SetPosition(0, world_anchor);
         lineRenderer.SetPosition(1, connectedAnchor);
+    }
+
+    private void ReelGrapple()
+    {
+        var grappleVerticalSpeed = UserInput.GetVerticalValue() * grappleReelSpeed;
+        distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
     }
 
     private void DetachGrappleOnClick()
