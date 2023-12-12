@@ -11,6 +11,12 @@ public class Player : MonoBehaviour
     [SerializeField] private Collider2D playerCollider;
     [SerializeField] private Rigidbody2D body;
     [SerializeField] private LayerMask groundLayer;
+    private Vector3 startPosition;
+
+    private void Start()
+    {
+        startPosition = transform.position;
+    }
 
     void Update()
     {
@@ -48,5 +54,10 @@ public class Player : MonoBehaviour
     private void Jump()
     {
         body.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+    }
+
+    internal void Reset()
+    {
+        transform.position = startPosition;
     }
 }

@@ -3,9 +3,11 @@ using UnityEngine;
 
 public class DeathPlane : MonoBehaviour
 {
+    [SerializeField] private Player player;
+
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(Tags.Player.ToString()))
+        if (other.CompareTag(Tags.Player))
         {
             PlayerDeath();
         }
@@ -13,7 +15,6 @@ public class DeathPlane : MonoBehaviour
 
     void PlayerDeath()
     {
-        //TODO Raised task under 2023-12-09 to decide what we do here
-        Debug.Log("The player died!");
+        player.Reset();
     }
 }

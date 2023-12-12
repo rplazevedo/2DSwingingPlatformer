@@ -1,7 +1,7 @@
 ﻿namespace Assets.Scripts.UnityEnums
 {
-    internal enum Tags
+    public static class Tags
     {
-        Player = 0
+        public static string Player = "Player";
     }
 }
