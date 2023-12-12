@@ -13,6 +13,12 @@ public class Player : MonoBehaviour
     [SerializeField] private Collider2D playerCollider;
     [SerializeField] private Rigidbody2D body;
     [SerializeField] private LayerMask groundLayer;
+    private Vector3 startPosition;
+
+    private void Start()
+    {
+        startPosition = transform.position;
+    }
 
     [Header("Grappling")]
     [SerializeField] float maxRange = 50f;
@@ -97,6 +103,11 @@ public class Player : MonoBehaviour
         body.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 
+    internal void Reset()
+    {
+        transform.position = startPosition;
+    }
+
     private void Grapple()
     {   
         if (CanGrapple() && Input.GetMouseButtonDown(0))
@@ -114,8 +125,6 @@ public class Player : MonoBehaviour
     {
         return !_isGrappled;
     }
-
-
 
     private void FireGrapple()
     {   
@@ -148,7 +157,4 @@ public class Player : MonoBehaviour
             _isGrappled = false;
         }
     }
-
-
-
 }
