@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    public float floatStrength = 0.5f;
+    [SerializeField] private float floatStrength = 0.5f;
 
     private float originalYPosition;
 
