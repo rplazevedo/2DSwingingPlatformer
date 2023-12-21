@@ -1,4 +1,6 @@
 using Assets.Scripts.Input;
+using Assets.Scripts.UnityEnums;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -59,6 +61,7 @@ public class Player : MonoBehaviour
     private void SetupDistanceJoint()
     {
         distanceJoint = GetComponent<DistanceJoint2D>();
+        distanceJoint.enableCollision = true;
         distanceJoint.anchor = Vector2.zero;
         distanceJoint.enabled = false;
         distanceJoint.maxDistanceOnly = true;
@@ -87,7 +90,16 @@ public class Player : MonoBehaviour
     private void HorizontalMovement()
     {
         var xSpeed = UserInput.GetHorizontalValue() * speed;
-        body.velocity = new Vector2(xSpeed, body.velocity.y);
+        var currentXSpeed = body.velocity.x;
+        if (xSpeed > 0)
+        {
+            body.velocity = new Vector2(Mathf.Max(xSpeed, currentXSpeed), body.velocity.y);
+        }
+        else if (xSpeed < 0) 
+        {
+            body.velocity = new Vector2(Mathf.Min(xSpeed, currentXSpeed), body.velocity.y);
+        }
+
     }
 
     private bool ShouldJump()
@@ -177,11 +189,12 @@ public class Player : MonoBehaviour
     private bool NoGrappleColision()
     {
         // TODO: Change to OnCollisionEnter
-        Vector2 directionToGrapplePoint = distanceJoint.connectedAnchor - distanceJoint.anchor;
-        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size * 0.9f, 0f, directionToGrapplePoint, minRange);
-        return collisionHit.collider == null;
-    }
 
+        Vector2 directionToGrapplePoint = distanceJoint.connectedAnchor - distanceJoint.anchor;
+        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size * 0.8f, 0f, directionToGrapplePoint, minRange);
+        return collisionHit.collider == null;
+
+    }
 
     private void DetachGrappleOnClick()
     {
