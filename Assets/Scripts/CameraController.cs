@@ -4,19 +4,27 @@ public class CameraController : MonoBehaviour
 {
     [SerializeField] private Transform target;
     [SerializeField] private float yOffset;
+    [SerializeField] private bool flip;
 
     private float updateDelay = 0.25f;
+    private float xOffset = 2f;
     private Vector3 velocity;
     private Vector3 offset;
 
     private void Awake()
     {
         velocity = Vector3.zero;
-        offset = new Vector3(0, yOffset, -10);
+        offset = new Vector3(xOffset, yOffset, -10);
     }
 
     private void Update()
     {
+        //If Player isMovingLeft then set xOffset to -2
+        offset = new Vector3(xOffset, yOffset, -10);
+        if (flip)
+        {
+            offset.x = -xOffset;
+        }
         var targetPosition = target.position + offset;
         transform.position = GetNewPosition(targetPosition);
     }
