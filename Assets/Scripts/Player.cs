@@ -1,6 +1,4 @@
 using Assets.Scripts.Input;
-using Assets.Scripts.UnityEnums;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -178,16 +176,14 @@ public class Player : MonoBehaviour
             distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
             SolveGrappleCollisions();
         }
-
-
     }
 
     private bool CanReelGrapple(float grappleVerticalSpeed)
     {
-
-        return ((grappleVerticalSpeed > 0 && distanceJoint.distance >= minRange) || (grappleVerticalSpeed < 0 && distanceJoint.distance <= maxRange));
+        bool canReelIn = grappleVerticalSpeed > 0 && distanceJoint.distance > minRange;
+        bool canReelOut = grappleVerticalSpeed < 0 && distanceJoint.distance < maxRange;
+        return canReelIn || canReelOut;
     }
-
 
     private void SolveGrappleCollisions()
     {
@@ -196,9 +192,7 @@ public class Player : MonoBehaviour
         {
             if (hit == boxCollider)
                 continue;
-
             ColliderDistance2D colliderDistance = hit.Distance(boxCollider);
-
             if (colliderDistance.isOverlapped)
             {
                 transform.Translate(colliderDistance.pointA - colliderDistance.pointB);
@@ -206,8 +200,6 @@ public class Player : MonoBehaviour
         }
 
     }
-
-
 
     private void DetachGrappleOnClick()
     {
