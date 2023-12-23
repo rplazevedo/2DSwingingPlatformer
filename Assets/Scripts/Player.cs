@@ -21,16 +21,21 @@ public class Player : MonoBehaviour
     }
 
     [Header("Grappling")]
-    [SerializeField] float maxRange = 50f;
-    [SerializeField] bool infiniteRange = false;
+    [SerializeField] private float maxRange = 50f;
+    [SerializeField] private float minRange = 0f;
+    [SerializeField] private bool infiniteRange = false;
+    [SerializeField] private float grappleReelSpeed = 5f;
+
     private bool _isGrappled;
     private LineRenderer lineRenderer;
     private DistanceJoint2D distanceJoint;
+    private BoxCollider2D boxCollider;
 
     private void Awake()
     {
         SetupLineRenderer();
         SetupDistanceJoint();
+        boxCollider = GetComponent<BoxCollider2D>(); 
 
         if (infiniteRange)
         {
@@ -56,8 +61,10 @@ public class Player : MonoBehaviour
     private void SetupDistanceJoint()
     {
         distanceJoint = GetComponent<DistanceJoint2D>();
+        distanceJoint.enableCollision = true;
         distanceJoint.anchor = Vector2.zero;
         distanceJoint.enabled = false;
+        distanceJoint.maxDistanceOnly = true;
     }
 
     void Update()
@@ -83,7 +90,16 @@ public class Player : MonoBehaviour
     private void HorizontalMovement()
     {
         var xSpeed = UserInput.GetHorizontalValue() * speed;
-        body.velocity = new Vector2(xSpeed, body.velocity.y);
+        var currentXSpeed = body.velocity.x;
+        if (xSpeed > 0)
+        {
+            body.velocity = new Vector2(Mathf.Max(xSpeed, currentXSpeed), body.velocity.y);
+        }
+        else if (xSpeed < 0) 
+        {
+            body.velocity = new Vector2(Mathf.Min(xSpeed, currentXSpeed), body.velocity.y);
+        }
+
     }
 
     private bool ShouldJump()
@@ -117,7 +133,8 @@ public class Player : MonoBehaviour
         else if (_isGrappled)
         {
             DrawLine();
-            DetachGrappleOnClick();        
+            ReelGrapple();
+            DetachGrappleOnClick();     
         }
     }
 
@@ -146,6 +163,42 @@ public class Player : MonoBehaviour
         var world_anchor = transform.TransformPoint(anchor);
         lineRenderer.SetPosition(0, world_anchor);
         lineRenderer.SetPosition(1, connectedAnchor);
+    }
+
+
+
+
+    private void ReelGrapple()
+    {
+        var grappleVerticalSpeed = UserInput.GetVerticalValue() * grappleReelSpeed;
+        if (CanReelGrapple(grappleVerticalSpeed))
+        {
+            distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
+            SolveGrappleCollisions();
+        }
+    }
+
+    private bool CanReelGrapple(float grappleVerticalSpeed)
+    {
+        bool canReelIn = grappleVerticalSpeed > 0 && distanceJoint.distance > minRange;
+        bool canReelOut = grappleVerticalSpeed < 0 && distanceJoint.distance < maxRange;
+        return canReelIn || canReelOut;
+    }
+
+    private void SolveGrappleCollisions()
+    {
+        Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit == boxCollider)
+                continue;
+            ColliderDistance2D colliderDistance = hit.Distance(boxCollider);
+            if (colliderDistance.isOverlapped)
+            {
+                transform.Translate(colliderDistance.pointA - colliderDistance.pointB);
+            }
+        }
+
     }
 
     private void DetachGrappleOnClick()
