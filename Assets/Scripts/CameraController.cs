@@ -1,10 +1,10 @@
+using Assets.Scripts.Input;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private Transform target;
     [SerializeField] private float yOffset;
-    [SerializeField] private bool flip;
 
     private float updateDelay = 0.25f;
     private float xOffset = 2f;
@@ -21,7 +21,7 @@ public class CameraController : MonoBehaviour
     {
         //If Player isMovingLeft then set xOffset to -2
         offset = new Vector3(xOffset, yOffset, -10);
-        if (flip)
+        if (UserInput.GetHorizontalValue() < 0) //TODO Review this - maybe we want to take player's velocity instead
         {
             offset.x = -xOffset;
         }
