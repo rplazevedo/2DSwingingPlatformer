@@ -714,7 +714,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   maxRange: 50
+  minRange: 0.2
   infiniteRange: 1
+  grappleReelSpeed: 5
 --- !u!232 &1862080532
 DistanceJoint2D:
   m_ObjectHideFlags: 0
@@ -734,7 +736,7 @@ DistanceJoint2D:
   m_ConnectedAnchor: {x: -0.7, y: -0.48}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_MaxDistanceOnly: 0
+  m_MaxDistanceOnly: 1
 --- !u!50 &1862080533
 Rigidbody2D:
   serializedVersion: 4
@@ -760,7 +762,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!120 &1862080534
 LineRenderer:
