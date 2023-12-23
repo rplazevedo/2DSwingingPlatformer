@@ -24,18 +24,20 @@ public class Player : MonoBehaviour
 
     [Header("Grappling")]
     [SerializeField] private float maxRange = 50f;
-    [SerializeField] private float minRange = 0.2f;
+    [SerializeField] private float minRange = 0f;
     [SerializeField] private bool infiniteRange = false;
     [SerializeField] private float grappleReelSpeed = 5f;
 
     private bool _isGrappled;
     private LineRenderer lineRenderer;
     private DistanceJoint2D distanceJoint;
+    private BoxCollider2D boxCollider;
 
     private void Awake()
     {
         SetupLineRenderer();
         SetupDistanceJoint();
+        boxCollider = GetComponent<BoxCollider2D>(); 
 
         if (infiniteRange)
         {
@@ -134,7 +136,7 @@ public class Player : MonoBehaviour
         {
             DrawLine();
             ReelGrapple();
-            DetachGrappleOnClick();        
+            DetachGrappleOnClick();     
         }
     }
 
@@ -174,6 +176,7 @@ public class Player : MonoBehaviour
         if (CanReelGrapple(grappleVerticalSpeed))
         {
             distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
+            SolveGrappleCollisions();
         }
 
 
@@ -182,19 +185,29 @@ public class Player : MonoBehaviour
     private bool CanReelGrapple(float grappleVerticalSpeed)
     {
 
-        return ((grappleVerticalSpeed > 0 && NoGrappleColision()) || (grappleVerticalSpeed < 0 && distanceJoint.distance < maxRange));
+        return ((grappleVerticalSpeed > 0 && distanceJoint.distance >= minRange) || (grappleVerticalSpeed < 0 && distanceJoint.distance <= maxRange));
     }
 
 
-    private bool NoGrappleColision()
+    private void SolveGrappleCollisions()
     {
-        // TODO: Change to OnCollisionEnter
+        Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit == boxCollider)
+                continue;
 
-        Vector2 directionToGrapplePoint = distanceJoint.connectedAnchor - distanceJoint.anchor;
-        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size * 0.8f, 0f, directionToGrapplePoint, minRange);
-        return collisionHit.collider == null;
+            ColliderDistance2D colliderDistance = hit.Distance(boxCollider);
+
+            if (colliderDistance.isOverlapped)
+            {
+                transform.Translate(colliderDistance.pointA - colliderDistance.pointB);
+            }
+        }
 
     }
+
+
 
     private void DetachGrappleOnClick()
     {
