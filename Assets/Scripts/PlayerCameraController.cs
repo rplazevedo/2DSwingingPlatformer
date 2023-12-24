@@ -1,8 +1,9 @@
 using Assets.Scripts.Input;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class PlayerCameraController : MonoBehaviour
 {
+    [SerializeField] private Rigidbody2D body;
     [SerializeField] private Transform target;
     [SerializeField] private float yOffset;
 
@@ -20,11 +21,13 @@ public class CameraController : MonoBehaviour
     private void Update()
     {
         //If Player isMovingLeft then set xOffset to -2
+        //offset = new Vector3(xOffset, yOffset, -10);
+        //if (UserInput.GetHorizontalValue() < 0) //TODO Review this - maybe we want to take player's velocity instead
+        //{
+        //    offset.x = -xOffset;
+        //}
+        xOffset = body.velocity.x / 2;
         offset = new Vector3(xOffset, yOffset, -10);
-        if (UserInput.GetHorizontalValue() < 0) //TODO Review this - maybe we want to take player's velocity instead
-        {
-            offset.x = -xOffset;
-        }
         var targetPosition = target.position + offset;
         transform.position = GetNewPosition(targetPosition);
     }
