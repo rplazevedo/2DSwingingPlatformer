@@ -140,7 +140,7 @@ public class Player : MonoBehaviour
     {   
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange);
-        if (hit && hit.collider.gameObject.layer == 6)
+        if (hit && hit.collider.gameObject.layer == 6) // This is not very explicit that layer 6 is the Ground layer
         {
             distanceJoint.enabled = true;
             lineRenderer.enabled = true;
