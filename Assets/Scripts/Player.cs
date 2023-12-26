@@ -48,10 +48,6 @@ public class Player : MonoBehaviour
     private void SetupLineRenderer()
     {
         lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.startColor = Color.black;
-        lineRenderer.endColor = Color.black;
-        lineRenderer.startWidth = 0.02f;
-        lineRenderer.endWidth = .02f;
         lineRenderer.positionCount = 2;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.useWorldSpace = true;
@@ -61,10 +57,7 @@ public class Player : MonoBehaviour
     private void SetupDistanceJoint()
     {
         distanceJoint = GetComponent<DistanceJoint2D>();
-        distanceJoint.enableCollision = true;
-        distanceJoint.anchor = Vector2.zero;
         distanceJoint.enabled = false;
-        distanceJoint.maxDistanceOnly = true;
     }
 
     void Update()
@@ -205,9 +198,14 @@ public class Player : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            distanceJoint.enabled = false;
-            lineRenderer.enabled = false;
-            _isGrappled = false;
+            DetachGrapple();
         }
+    }
+
+    public void DetachGrapple()
+    {
+        distanceJoint.enabled = false;
+        lineRenderer.enabled = false;
+        _isGrappled = false;
     }
 }
