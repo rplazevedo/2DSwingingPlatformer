@@ -105,7 +105,7 @@ public class Player : MonoBehaviour
 
     private void Grapple()
     {   
-        if (CanGrapple() && Input.GetMouseButtonDown(0))
+        if (CanGrapple() && UserInput.GetLeftMouseButtonDown())
         {
             FireGrapple();
         }
@@ -182,7 +182,7 @@ public class Player : MonoBehaviour
 
     private void DetachGrappleOnClick()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (UserInput.GetLeftMouseButtonDown())
         {
             DetachGrapple();
         }

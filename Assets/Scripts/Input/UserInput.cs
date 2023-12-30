@@ -21,5 +21,11 @@
         {
             return UnityEngine.Input.GetAxis(Vertical);
         }
+
+        public static bool GetLeftMouseButtonDown()
+        {
+            return UnityEngine.Input.GetMouseButtonDown(0);
+        }
+
     }
 }
