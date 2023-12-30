@@ -1,4 +1,3 @@
-using Assets.Scripts.Input;
 using UnityEngine;
 
 public class PlayerCameraController : MonoBehaviour
@@ -20,12 +19,6 @@ public class PlayerCameraController : MonoBehaviour
 
     private void Update()
     {
-        //If Player isMovingLeft then set xOffset to -2
-        //offset = new Vector3(xOffset, yOffset, -10);
-        //if (UserInput.GetHorizontalValue() < 0) //TODO Review this - maybe we want to take player's velocity instead
-        //{
-        //    offset.x = -xOffset;
-        //}
         xOffset = body.velocity.x / 2;
         offset = new Vector3(xOffset, yOffset, -10);
         var targetPosition = target.position + offset;
