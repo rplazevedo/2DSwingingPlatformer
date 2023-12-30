@@ -49,7 +49,6 @@ public class Player : MonoBehaviour
     {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 2;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.useWorldSpace = true;
         lineRenderer.enabled = false;
     }
