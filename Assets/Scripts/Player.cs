@@ -33,8 +33,8 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        SetupLineRenderer();
-        SetupDistanceJoint();
+        lineRenderer = GetComponent<LineRenderer>();
+        distanceJoint = GetComponent<DistanceJoint2D>();
         boxCollider = GetComponent<BoxCollider2D>(); 
 
         if (infiniteRange)
@@ -43,28 +43,6 @@ public class Player : MonoBehaviour
         }
         _isGrappled = false;
         cam = Camera.main;
-    }
-
-    private void SetupLineRenderer()
-    {
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.startColor = Color.black;
-        lineRenderer.endColor = Color.black;
-        lineRenderer.startWidth = 0.02f;
-        lineRenderer.endWidth = .02f;
-        lineRenderer.positionCount = 2;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        lineRenderer.useWorldSpace = true;
-        lineRenderer.enabled = false;
-    }
-
-    private void SetupDistanceJoint()
-    {
-        distanceJoint = GetComponent<DistanceJoint2D>();
-        distanceJoint.enableCollision = true;
-        distanceJoint.anchor = Vector2.zero;
-        distanceJoint.enabled = false;
-        distanceJoint.maxDistanceOnly = true;
     }
 
     void Update()
@@ -122,11 +100,12 @@ public class Player : MonoBehaviour
     internal void Reset()
     {
         transform.position = startPosition;
+        DetachGrapple();
     }
 
     private void Grapple()
     {   
-        if (CanGrapple() && Input.GetMouseButtonDown(0))
+        if (CanGrapple() && UserInput.GetLeftMouseButtonDown())
         {
             FireGrapple();
         }
@@ -147,7 +126,7 @@ public class Player : MonoBehaviour
     {   
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange);
-        if (hit)
+        if (hit && hit.collider.gameObject.layer == 6) // This is not very explicit that layer 6 is the Ground layer
         {
             distanceJoint.enabled = true;
             lineRenderer.enabled = true;
@@ -203,11 +182,16 @@ public class Player : MonoBehaviour
 
     private void DetachGrappleOnClick()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (UserInput.GetLeftMouseButtonDown())
         {
-            distanceJoint.enabled = false;
-            lineRenderer.enabled = false;
-            _isGrappled = false;
+            DetachGrapple();
         }
+    }
+
+    public void DetachGrapple()
+    {
+        distanceJoint.enabled = false;
+        lineRenderer.enabled = false;
+        _isGrappled = false;
     }
 }
