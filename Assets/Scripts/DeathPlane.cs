@@ -16,6 +16,5 @@ public class DeathPlane : MonoBehaviour
     void PlayerDeath()
     {
         player.Reset();
-        player.DetachGrapple();
     }
 }

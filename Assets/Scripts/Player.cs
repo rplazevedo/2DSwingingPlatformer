@@ -114,6 +114,7 @@ public class Player : MonoBehaviour
     internal void Reset()
     {
         transform.position = startPosition;
+        DetachGrapple();
     }
 
     private void Grapple()
