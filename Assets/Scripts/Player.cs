@@ -33,8 +33,8 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        SetupLineRenderer();
-        SetupDistanceJoint();
+        lineRenderer = GetComponent<LineRenderer>();
+        distanceJoint = GetComponent<DistanceJoint2D>();
         boxCollider = GetComponent<BoxCollider2D>(); 
 
         if (infiniteRange)
@@ -43,20 +43,6 @@ public class Player : MonoBehaviour
         }
         _isGrappled = false;
         cam = Camera.main;
-    }
-
-    private void SetupLineRenderer()
-    {
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = 2;
-        lineRenderer.useWorldSpace = true;
-        lineRenderer.enabled = false;
-    }
-
-    private void SetupDistanceJoint()
-    {
-        distanceJoint = GetComponent<DistanceJoint2D>();
-        distanceJoint.enabled = false;
     }
 
     void Update()
