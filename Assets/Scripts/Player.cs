@@ -100,6 +100,7 @@ public class Player : MonoBehaviour
     internal void Reset()
     {
         transform.position = startPosition;
+        body.velocity = Vector2.zero;
         DetachGrapple();
     }
 
