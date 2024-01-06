@@ -8,17 +8,14 @@ public class Player : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float speed = 5;
     [SerializeField] private float jumpForce = 10;
+    [SerializeField] private PhysicsMaterial2D highFrictionMaterial;
+    [SerializeField] private PhysicsMaterial2D lowFrictionMaterial;
 
     [Header("Collision")]
     [SerializeField] private Collider2D playerCollider;
     [SerializeField] private Rigidbody2D body;
     [SerializeField] private LayerMask groundLayer;
     private Vector3 startPosition;
-
-    private void Start()
-    {
-        startPosition = transform.position;
-    }
 
     [Header("Grappling")]
     [SerializeField] private float maxRange = 50f;
@@ -43,6 +40,7 @@ public class Player : MonoBehaviour
         }
         _isGrappled = false;
         cam = Camera.main;
+        startPosition = transform.position;
     }
 
     void Update()
@@ -59,6 +57,8 @@ public class Player : MonoBehaviour
     {   
         HorizontalMovement();
 
+        AdjustFriction();
+
         if (ShouldJump())
         {
             Jump();
@@ -68,16 +68,23 @@ public class Player : MonoBehaviour
     private void HorizontalMovement()
     {
         var xSpeed = UserInput.GetHorizontalValue() * speed;
-        var currentXSpeed = body.velocity.x;
-        if (xSpeed > 0)
+        if(xSpeed == 0)
         {
-            body.velocity = new Vector2(Mathf.Max(xSpeed, currentXSpeed), body.velocity.y);
-        }
-        else if (xSpeed < 0) 
-        {
-            body.velocity = new Vector2(Mathf.Min(xSpeed, currentXSpeed), body.velocity.y);
+            return;
         }
 
+        var currentXVelocity = body.velocity.x;
+
+        var updatedXVelocity = xSpeed > 0 ? 
+            Mathf.Max(xSpeed, currentXVelocity) : 
+            Mathf.Min(xSpeed, currentXVelocity);
+
+        body.velocity = new Vector2(updatedXVelocity, body.velocity.y);
+    }
+
+    private void AdjustFriction()
+    {
+        body.sharedMaterial = IsGrounded() ? highFrictionMaterial : lowFrictionMaterial;
     }
 
     private bool ShouldJump()
@@ -145,9 +152,6 @@ public class Player : MonoBehaviour
         lineRenderer.SetPosition(1, connectedAnchor);
     }
 
-
-
-
     private void ReelGrapple()
     {
         var grappleVerticalSpeed = UserInput.GetVerticalValue() * grappleReelSpeed;
@@ -168,7 +172,7 @@ public class Player : MonoBehaviour
     private void SolveGrappleCollisions()
     {
         Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
-        foreach (Collider2D hit in hits)
+        foreach (var hit in hits)
         {
             if (hit == boxCollider)
                 continue;
@@ -178,7 +182,6 @@ public class Player : MonoBehaviour
                 transform.Translate(colliderDistance.pointA - colliderDistance.pointB);
             }
         }
-
     }
 
     private void DetachGrappleOnClick()
