@@ -1,4 +1,5 @@
 using Assets.Scripts.Input;
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,6 +9,8 @@ public class Player : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float speed = 5;
     [SerializeField] private float jumpForce = 10;
+    [SerializeField] private PhysicsMaterial2D highFrictionMaterial;
+    [SerializeField] private PhysicsMaterial2D lowFrictionMaterial;
 
     [Header("Collision")]
     [SerializeField] private Collider2D playerCollider;
@@ -59,10 +62,23 @@ public class Player : MonoBehaviour
     {   
         HorizontalMovement();
 
+        AdjustFriction();
+
         if (ShouldJump())
         {
             Jump();
         }
+    }
+
+    private void AdjustFriction()
+    {
+        if(IsGrounded())
+        {
+            body.sharedMaterial = highFrictionMaterial;
+            return;
+        }
+
+        body.sharedMaterial = lowFrictionMaterial;
     }
 
     private void HorizontalMovement()
@@ -144,9 +160,6 @@ public class Player : MonoBehaviour
         lineRenderer.SetPosition(0, world_anchor);
         lineRenderer.SetPosition(1, connectedAnchor);
     }
-
-
-
 
     private void ReelGrapple()
     {
