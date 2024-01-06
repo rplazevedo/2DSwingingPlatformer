@@ -132,22 +132,22 @@ public class Player : MonoBehaviour
     }
 
     private void FireGrapple()
-    {   
+    {
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange);
-        if (!hit) { 
-            return; 
-        }
+        var hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange);
 
-        if (!hit.collider.gameObject.TryGetComponent<Grappleable>(out _))
+        if (HitGrappleableComponent(ref hit))
         {
-            return; 
+            distanceJoint.connectedAnchor = hit.point;
+            distanceJoint.enabled = true;
+            lineRenderer.enabled = true;
+            _isGrappled = true;
         }
-        Debug.Log("Grappleable!");
-        distanceJoint.enabled = true;
-        lineRenderer.enabled = true;
-        distanceJoint.connectedAnchor = hit.point;
-        _isGrappled = true;
+    }
+
+    private static bool HitGrappleableComponent(ref RaycastHit2D hit)
+    {
+        return hit && hit.collider.gameObject.TryGetComponent<Grappleable>(out _);
     }
 
     private void DrawLine()
