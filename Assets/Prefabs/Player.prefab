@@ -51,6 +51,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   jumpForce: 10
+  highFrictionMaterial: {fileID: 6200000, guid: 6fb54330a15b7314c8b5bc7c489eec58, type: 2}
+  lowFrictionMaterial: {fileID: 6200000, guid: 862f674543dac644cb9bef50cda86640, type: 2}
   playerCollider: {fileID: 1509556077768544152}
   body: {fileID: 1263738462294943090}
   groundLayer:

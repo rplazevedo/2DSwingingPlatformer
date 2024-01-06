@@ -1,5 +1,4 @@
 using Assets.Scripts.Input;
-using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -17,11 +16,6 @@ public class Player : MonoBehaviour
     [SerializeField] private Rigidbody2D body;
     [SerializeField] private LayerMask groundLayer;
     private Vector3 startPosition;
-
-    private void Start()
-    {
-        startPosition = transform.position;
-    }
 
     [Header("Grappling")]
     [SerializeField] private float maxRange = 50f;
@@ -46,6 +40,7 @@ public class Player : MonoBehaviour
         }
         _isGrappled = false;
         cam = Camera.main;
+        startPosition = transform.position;
     }
 
     void Update()
@@ -70,30 +65,26 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void AdjustFriction()
-    {
-        if(IsGrounded())
-        {
-            body.sharedMaterial = highFrictionMaterial;
-            return;
-        }
-
-        body.sharedMaterial = lowFrictionMaterial;
-    }
-
     private void HorizontalMovement()
     {
         var xSpeed = UserInput.GetHorizontalValue() * speed;
-        var currentXSpeed = body.velocity.x;
-        if (xSpeed > 0)
+        if(xSpeed == 0)
         {
-            body.velocity = new Vector2(Mathf.Max(xSpeed, currentXSpeed), body.velocity.y);
-        }
-        else if (xSpeed < 0) 
-        {
-            body.velocity = new Vector2(Mathf.Min(xSpeed, currentXSpeed), body.velocity.y);
+            return;
         }
 
+        var currentXVelocity = body.velocity.x;
+
+        var updatedXVelocity = xSpeed > 0 ? 
+            Mathf.Max(xSpeed, currentXVelocity) : 
+            Mathf.Min(xSpeed, currentXVelocity);
+
+        body.velocity = new Vector2(updatedXVelocity, body.velocity.y);
+    }
+
+    private void AdjustFriction()
+    {
+        body.sharedMaterial = IsGrounded() ? highFrictionMaterial : lowFrictionMaterial;
     }
 
     private bool ShouldJump()
@@ -181,7 +172,7 @@ public class Player : MonoBehaviour
     private void SolveGrappleCollisions()
     {
         Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
-        foreach (Collider2D hit in hits)
+        foreach (var hit in hits)
         {
             if (hit == boxCollider)
                 continue;
@@ -191,7 +182,6 @@ public class Player : MonoBehaviour
                 transform.Translate(colliderDistance.pointA - colliderDistance.pointB);
             }
         }
-
     }
 
     private void DetachGrappleOnClick()
