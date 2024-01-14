@@ -7,7 +7,8 @@ public class Player : MonoBehaviour
     private Camera cam;
 
     [Header("Movement")]
-    [SerializeField] private float speed = 5;
+    [SerializeField] private float maxSpeed = 5;
+    [SerializeField] private float acceleration = 5;
     [SerializeField] private float jumpForce = 10;
     [SerializeField] private PhysicsMaterial2D highFrictionMaterial;
     [SerializeField] private PhysicsMaterial2D lowFrictionMaterial;
@@ -56,7 +57,10 @@ public class Player : MonoBehaviour
 
     private void Move()
     {   
-        HorizontalMovement();
+        if (IsGrounded())
+        {
+            HorizontalMovement();
+        }
 
         AdjustFriction();
 
@@ -68,19 +72,20 @@ public class Player : MonoBehaviour
 
     private void HorizontalMovement()
     {
-        var xSpeed = UserInput.GetHorizontalValue() * speed;
-        if(xSpeed == 0)
+        var xForce = UserInput.GetHorizontalValue() * acceleration;
+        var currentXVelocity = body.velocity.x;
+
+        var forceSpeedSameDirection = xForce * currentXVelocity > 0;
+        var tryingToAccelerateOverMaxSpeed = Mathf.Abs(currentXVelocity) > maxSpeed && forceSpeedSameDirection;
+
+        if (xForce == 0 || tryingToAccelerateOverMaxSpeed)
         {
             return;
         }
 
-        var currentXVelocity = body.velocity.x;
+        var force = new Vector2(xForce, 0);
 
-        var updatedXVelocity = xSpeed > 0 ? 
-            Mathf.Max(xSpeed, currentXVelocity) : 
-            Mathf.Min(xSpeed, currentXVelocity);
-
-        body.velocity = new Vector2(updatedXVelocity, body.velocity.y);
+        body.AddForce(force, ForceMode2D.Force);
     }
 
     private void AdjustFriction()
