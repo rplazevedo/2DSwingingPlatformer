@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BackgroundParallax : MonoBehaviour
 {
-    [SerializeField] private float parallaxRate = -3.0f;
+    [SerializeField] private float parallaxRate = 3.0f;
     private Camera cam;
 
     void Start()
