@@ -7,8 +7,11 @@ public class Player : MonoBehaviour
     private Camera cam;
 
     [Header("Movement")]
-    [SerializeField] private float maxSpeed = 5;
-    [SerializeField] private float acceleration = 5;
+    [SerializeField] private float maxGroundSpeed = 5;
+    [SerializeField] private float groundAcceleration = 5;
+    [SerializeField] private bool allowAirMovement = true;
+    [SerializeField] private float maxAirSpeed = 1000;
+    [SerializeField] private float airAcceleration = 0.25f;
     [SerializeField] private float jumpForce = 10;
     [SerializeField] private PhysicsMaterial2D highFrictionMaterial;
     [SerializeField] private PhysicsMaterial2D lowFrictionMaterial;
@@ -57,10 +60,7 @@ public class Player : MonoBehaviour
 
     private void Move()
     {   
-        if (IsGrounded())
-        {
-            HorizontalMovement();
-        }
+        HorizontalMovement();
 
         AdjustFriction();
 
@@ -72,6 +72,20 @@ public class Player : MonoBehaviour
 
     private void HorizontalMovement()
     {
+        float acceleration;
+        float maxSpeed;
+        if (IsGrounded())
+        {
+            maxSpeed = maxGroundSpeed;
+            acceleration = groundAcceleration;
+        }
+        else if (allowAirMovement)
+        {
+            maxSpeed = maxAirSpeed;
+            acceleration = airAcceleration;
+        }
+        else { return; }
+
         var xForce = UserInput.GetHorizontalValue() * acceleration;
         var currentXVelocity = body.velocity.x;
 
@@ -83,6 +97,7 @@ public class Player : MonoBehaviour
             return;
         }
 
+        // TODO: Prevent accelerating over max airspped
         if( forceSpeedSameDirection && speedOverMaxSpeed)
         {
             body.velocity = new Vector2(Mathf.Sign(currentXVelocity) * maxSpeed, body.velocity.y);
