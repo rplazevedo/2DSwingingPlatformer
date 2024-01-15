@@ -76,10 +76,16 @@ public class Player : MonoBehaviour
         var currentXVelocity = body.velocity.x;
 
         var forceSpeedSameDirection = xForce * currentXVelocity > 0;
-        var tryingToAccelerateOverMaxSpeed = Mathf.Abs(currentXVelocity) > maxSpeed && forceSpeedSameDirection;
+        var speedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
 
-        if (xForce == 0 || tryingToAccelerateOverMaxSpeed)
+        if (xForce == 0 )
         {
+            return;
+        }
+
+        if( forceSpeedSameDirection && speedOverMaxSpeed)
+        {
+            body.velocity = new Vector2(Mathf.Sign(currentXVelocity) * maxSpeed, body.velocity.y);
             return;
         }
 
