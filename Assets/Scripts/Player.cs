@@ -97,10 +97,12 @@ public class Player : MonoBehaviour
             return;
         }
 
-        // TODO: Prevent accelerating over max airspped
         if( forceSpeedSameDirection && speedOverMaxSpeed)
         {
-            body.velocity = new Vector2(Mathf.Sign(currentXVelocity) * maxSpeed, body.velocity.y);
+            if (IsGrounded())
+            {
+                body.velocity = new Vector2(Mathf.Sign(currentXVelocity) * maxSpeed, body.velocity.y);
+            }
             return;
         }
 
