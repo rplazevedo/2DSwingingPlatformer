@@ -98,7 +98,9 @@ public class Player : MonoBehaviour
         }
 
         if( forceSpeedSameDirection && speedOverMaxSpeed)
-        {
+        {   
+            // This if statement smooths out movement on the ground, but prevents player from sliding if
+            // holding same movement key as current direction. Haven't found another way to smooth movement though.
             if (IsGrounded())
             {
                 body.velocity = new Vector2(Mathf.Sign(currentXVelocity) * maxSpeed, body.velocity.y);
