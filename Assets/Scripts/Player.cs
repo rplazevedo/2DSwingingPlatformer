@@ -10,8 +10,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float maxGroundSpeed = 5;
     [SerializeField] private float groundAcceleration = 5;
     [SerializeField] private bool allowAirMovement = true;
-    [SerializeField] private float maxAirSpeed = 1000;
-    [SerializeField] private float airAcceleration = 0.25f;
+    [SerializeField] private float maxAirSpeed = 5;
+    [SerializeField] private float airAcceleration = 0.5f;
     [SerializeField] private float jumpForce = 10;
     [SerializeField] private PhysicsMaterial2D highFrictionMaterial;
     [SerializeField] private PhysicsMaterial2D lowFrictionMaterial;
