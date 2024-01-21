@@ -59,22 +59,24 @@ public class Player : MonoBehaviour
     }
 
     private void Move()
-    {   
-        HorizontalMovement();
+    {
+        var isGrounded = IsGrounded();
 
-        AdjustFriction();
+        HorizontalMovement(isGrounded);
 
-        if (ShouldJump())
+        AdjustFriction(isGrounded);
+
+        if (ShouldJump(isGrounded))
         {
             Jump();
         }
     }
 
-    private void HorizontalMovement()
+    private void HorizontalMovement(bool isGrounded)
     {
         float acceleration;
         float maxSpeed;
-        if (IsGrounded())
+        if (isGrounded)
         {
             maxSpeed = maxGroundSpeed;
             acceleration = groundAcceleration;
@@ -89,19 +91,19 @@ public class Player : MonoBehaviour
         var xForce = UserInput.GetHorizontalValue() * acceleration;
         var currentXVelocity = body.velocity.x;
 
-        var forceSpeedSameDirection = xForce * currentXVelocity > 0;
-        var speedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
+        var isForceSpeedSameDirection = xForce * currentXVelocity > 0;
+        var isSpeedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
 
         if (xForce == 0 )
         {
             return;
         }
 
-        if( forceSpeedSameDirection && speedOverMaxSpeed)
+        if( isForceSpeedSameDirection && isSpeedOverMaxSpeed)
         {   
             // This if statement smooths out movement on the ground, but prevents player from sliding if
             // holding same movement key as current direction. Haven't found another way to smooth movement though.
-            if (IsGrounded())
+            if (isGrounded)
             {
                 body.velocity = new Vector2(Mathf.Sign(currentXVelocity) * maxSpeed, body.velocity.y);
             }
@@ -113,14 +115,14 @@ public class Player : MonoBehaviour
         body.AddForce(force, ForceMode2D.Force);
     }
 
-    private void AdjustFriction()
+    private void AdjustFriction(bool isGrounded)
     {
-        body.sharedMaterial = IsGrounded() ? highFrictionMaterial : lowFrictionMaterial;
+        body.sharedMaterial = isGrounded ? highFrictionMaterial : lowFrictionMaterial;
     }
 
-    private bool ShouldJump()
+    private bool ShouldJump(bool isGrounded)
     {
-        return UserInput.IsPressingJump() && IsGrounded();
+        return UserInput.IsPressingJump() && isGrounded;
     }
 
     private bool IsGrounded()
