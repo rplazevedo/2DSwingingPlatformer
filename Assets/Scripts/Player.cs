@@ -152,6 +152,7 @@ public class Player : MonoBehaviour
         }
         else if (_isGrappled)
         {
+            DetectGrappleLineCollision();
             DrawLine();
             ReelGrapple();
             DetachGrappleOnClick();     
@@ -181,6 +182,21 @@ public class Player : MonoBehaviour
     {
         return hit && hit.collider.gameObject.TryGetComponent<Grappleable>(out _);
     }
+
+    private void DetectGrappleLineCollision()
+    {
+        var connectedAnchor = new Vector3(distanceJoint.connectedAnchor.x, distanceJoint.connectedAnchor.y, 0);
+        var anchor = new Vector3(distanceJoint.anchor.x, distanceJoint.anchor.y, 0);
+        var world_anchor = transform.TransformPoint(anchor);
+        var hit = Physics2D.Linecast(connectedAnchor, world_anchor);
+
+        if (HitGrappleableComponent(ref hit))
+        {
+            var hitPoint = hit.point;
+            Debug.Log(hitPoint);
+        }
+    }
+
 
     private void DrawLine()
     {
