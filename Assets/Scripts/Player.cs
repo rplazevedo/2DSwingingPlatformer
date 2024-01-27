@@ -180,7 +180,18 @@ public class Player : MonoBehaviour
 
     private static bool HitGrappleableComponent(ref RaycastHit2D hit)
     {
-        return hit && hit.collider.gameObject.TryGetComponent<Grappleable>(out _);
+        if (hit.collider == null)
+        {
+            return false;
+        }
+        var hasGrappleProperties = hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
+        return hit && hasGrappleProperties && grappleProperties.grappleable; 
+    }
+
+    private static bool HitSwingableComponent(ref RaycastHit2D hit)
+    {
+        hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
+        return hit && grappleProperties.grappleable;
     }
 
     private void DetectGrappleLineCollision()
@@ -188,10 +199,10 @@ public class Player : MonoBehaviour
         var world_anchor = transform.TransformPoint(distanceJoint.anchor);
         var hit = Physics2D.Linecast(distanceJoint.connectedAnchor, world_anchor);
 
-        if (HitGrappleableComponent(ref hit))
+        if (hit.collider.gameObject != gameObject)
         {
-            var hitPoint = hit.point;
-            Debug.Log(hitPoint);
+            distanceJoint.connectedAnchor = hit.point;
+            Debug.Log(hit.collider.gameObject);
         }
     }
 

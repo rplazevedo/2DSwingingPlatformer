@@ -143,3 +143,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0148a8062f5139449c552147366086d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grappleable: 1
+  swingable: 1
