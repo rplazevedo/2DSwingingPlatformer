@@ -167,7 +167,7 @@ public class Player : MonoBehaviour
     private void FireGrapple()
     {
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
-        var hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange);
+        var hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange, groundLayer) ;
 
         if (HitGrappleableComponent(ref hit))
         {
@@ -201,12 +201,14 @@ public class Player : MonoBehaviour
     private void DetectGrappleLineCollision()
     {
         var world_anchor = transform.TransformPoint(distanceJoint.anchor);
-        var hit = Physics2D.Linecast(distanceJoint.connectedAnchor, world_anchor);
+        var hit = Physics2D.Linecast(distanceJoint.connectedAnchor, world_anchor, groundLayer);
 
-        if (hit.collider.gameObject != gameObject && HitSwingableComponent(ref hit))
+        if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(ref hit))
         {
-            distanceJoint.connectedAnchor = hit.point;
-            Debug.Log(hit.collider.gameObject);
+            var closestPointOnPerimiter = hit.collider.ClosestPoint(hit.point);
+            
+            //TODO: Figure out how to get the corners of the collider (and set the anchor just barely outside of them) instead of this
+            distanceJoint.connectedAnchor = 2.001f * closestPointOnPerimiter - closestPointOnPerimiter;
         }
     }
 
