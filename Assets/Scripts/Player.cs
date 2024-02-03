@@ -1,5 +1,8 @@
 using Assets.Scripts;
 using Assets.Scripts.Input;
+using System;
+using System.Drawing;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -205,13 +208,51 @@ public class Player : MonoBehaviour
 
         if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(ref hit))
         {
-            var closestPointOnPerimiter = hit.collider.ClosestPoint(hit.point);
-            
+
+            var closestPointOnPerimeter = GetClosestCorner(hit);
+            //.point, hit.collider.gameObject
+
+
+            //var closestPointOnPerimeter = hit.collider.ClosestPoint(hit.point);
+
+
+            var position = (Vector2)hit.collider.transform.position;
+
+
+
             //TODO: Figure out how to get the corners of the collider (and set the anchor just barely outside of them) instead of this
-            distanceJoint.connectedAnchor = 2.001f * closestPointOnPerimiter - closestPointOnPerimiter;
+            distanceJoint.connectedAnchor = ((closestPointOnPerimeter - position) * 1.005f) + position;
         }
     }
 
+    private Vector2 GetClosestCorner(RaycastHit2D hit)
+    {
+        Bounds bounds = hit.collider.bounds;
+
+        // Calculate the corners based on the bounds
+        Vector2[] corners = new Vector2[4];
+
+        corners[0] = new Vector2(bounds.min.x, bounds.min.y); // Bottom left
+        corners[1] = new Vector2(bounds.min.x, bounds.max.y); // Top left
+        corners[2] = new Vector2(bounds.max.x, bounds.min.y); // Bottom right
+        corners[3] = new Vector2(bounds.max.x, bounds.max.y); // Top right
+
+        var minDistance = float.MaxValue;
+        var closestCorner = Vector2.zero;
+
+        foreach (Vector2 corner in corners)
+        {
+            float distance = Vector2.Distance(hit.point, corner);
+
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestCorner = corner;
+            }
+        }
+
+        return closestCorner;
+    }
 
     private void DrawLine()
     {
