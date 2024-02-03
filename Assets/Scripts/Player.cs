@@ -2,8 +2,11 @@ using Assets.Scripts;
 using Assets.Scripts.Input;
 using System;
 using System.Drawing;
+using System.Reflection;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
@@ -203,57 +206,21 @@ public class Player : MonoBehaviour
 
     private void DetectGrappleLineCollision()
     {
-        var world_anchor = transform.TransformPoint(distanceJoint.anchor);
-        var hit = Physics2D.Linecast(distanceJoint.connectedAnchor, world_anchor, groundLayer);
+        var world_anchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
+
+        var connected_anchor = distanceJoint.connectedAnchor;
+
+        Vector2 direction = (connected_anchor - world_anchor).normalized;
+        var hit = Physics2D.Linecast(world_anchor, connected_anchor - (direction * 0.1f), groundLayer);
 
         if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(ref hit))
         {
+            hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
 
-            var closestPointOnPerimeter = GetClosestCorner(hit);
-            //.point, hit.collider.gameObject
-
-
-            //var closestPointOnPerimeter = hit.collider.ClosestPoint(hit.point);
-
-
-            var position = (Vector2)hit.collider.transform.position;
-
-
-
-            //TODO: Figure out how to get the corners of the collider (and set the anchor just barely outside of them) instead of this
-            distanceJoint.connectedAnchor = ((closestPointOnPerimeter - position) * 1.005f) + position;
+            var closestPointOnPerimeter = grappleProperties.GetClosestCorner(hit.point);
+            distanceJoint.connectedAnchor = closestPointOnPerimeter;
         }
     }
-
-    private Vector2 GetClosestCorner(RaycastHit2D hit)
-    {
-        Bounds bounds = hit.collider.bounds;
-
-        // Calculate the corners based on the bounds
-        Vector2[] corners = new Vector2[4];
-
-        corners[0] = new Vector2(bounds.min.x, bounds.min.y); // Bottom left
-        corners[1] = new Vector2(bounds.min.x, bounds.max.y); // Top left
-        corners[2] = new Vector2(bounds.max.x, bounds.min.y); // Bottom right
-        corners[3] = new Vector2(bounds.max.x, bounds.max.y); // Top right
-
-        var minDistance = float.MaxValue;
-        var closestCorner = Vector2.zero;
-
-        foreach (Vector2 corner in corners)
-        {
-            float distance = Vector2.Distance(hit.point, corner);
-
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestCorner = corner;
-            }
-        }
-
-        return closestCorner;
-    }
-
     private void DrawLine()
     {
         var world_anchor = transform.TransformPoint(distanceJoint.anchor);
