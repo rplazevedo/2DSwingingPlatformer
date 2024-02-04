@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
     [Header("Movement")]
     [SerializeField] private float maxGroundSpeed = 5;
     [SerializeField] private float groundAcceleration = 5;
@@ -66,32 +65,25 @@ public class Player : MonoBehaviour
 
     private void HorizontalMovement(bool isGrounded)
     {
-        float acceleration;
-        float maxSpeed;
-        if (isGrounded)
-        {
-            maxSpeed = maxGroundSpeed;
-            acceleration = groundAcceleration;
-        }
-        else if (allowAirMovement)
-        {
-            maxSpeed = maxAirSpeed;
-            acceleration = airAcceleration;
-        }
-        else { return; }
-
-        var xForce = UserInput.GetHorizontalValue() * acceleration;
-        var currentXVelocity = body.velocity.x;
-
-        var isForceSpeedSameDirection = xForce * currentXVelocity > 0;
-        var isSpeedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
-
-        if (xForce == 0 )
+        if (!isGrounded && !allowAirMovement)
         {
             return;
         }
 
-        if( isForceSpeedSameDirection && isSpeedOverMaxSpeed)
+        var xForce = UserInput.GetHorizontalValue() * GetAcceleration();
+        if (xForce == 0)
+        {
+            return;
+        }
+
+        var currentXVelocity = body.velocity.x;
+
+        var isForceSpeedSameDirection = xForce * currentXVelocity > 0;
+
+        var maxSpeed = GetMaxSpeed();
+        var isSpeedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
+
+        if(isForceSpeedSameDirection && isSpeedOverMaxSpeed)
         {   
             // This if statement smooths out movement on the ground, but prevents player from sliding if
             // holding same movement key as current direction. Haven't found another way to smooth movement though.
@@ -105,6 +97,16 @@ public class Player : MonoBehaviour
         var force = new Vector2(xForce, 0);
 
         body.AddForce(force, ForceMode2D.Force);
+    }
+
+    private float GetAcceleration()
+    {
+        return IsGrounded() ? groundAcceleration : airAcceleration;
+    }
+
+    private float GetMaxSpeed()
+    {
+        return IsGrounded() ? maxGroundSpeed : maxAirSpeed;
     }
 
     private void AdjustFriction(bool isGrounded)
