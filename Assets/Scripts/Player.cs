@@ -1,16 +1,8 @@
-using Assets.Scripts;
 using Assets.Scripts.Input;
-using System;
-using System.Drawing;
-using System.Reflection;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
-    private Camera cam;
 
     [Header("Movement")]
     [SerializeField] private float maxGroundSpeed = 5;
@@ -34,34 +26,28 @@ public class Player : MonoBehaviour
     [SerializeField] private bool infiniteRange = false;
     [SerializeField] private float grappleReelSpeed = 5f;
 
-    private bool _isGrappled;
-    private LineRenderer lineRenderer;
-    private DistanceJoint2D distanceJoint;
-    private BoxCollider2D boxCollider;
+    private GrapplingHook grapplingHook;
 
     private void Awake()
     {
-        lineRenderer = GetComponent<LineRenderer>();
-        distanceJoint = GetComponent<DistanceJoint2D>();
-        boxCollider = GetComponent<BoxCollider2D>(); 
-
         if (infiniteRange)
         {
             maxRange = 1000000;
         }
-        _isGrappled = false;
-        cam = Camera.main;
+        grapplingHook = gameObject.AddComponent<GrapplingHook>();
+        grapplingHook.Initialize(maxRange, minRange, grappleReelSpeed);
+
         startPosition = transform.position;
     }
 
     void Update()
     {
-        if (!_isGrappled)
+        if (!grapplingHook.IsGrappled())
         { 
             Move();
         }
         
-        Grapple();
+        grapplingHook.Grapple(groundLayer);
     }
 
     private void Move()
@@ -147,131 +133,6 @@ public class Player : MonoBehaviour
     {
         transform.position = startPosition;
         body.velocity = Vector2.zero;
-        DetachGrapple();
-    }
-
-    private void Grapple()
-    {   
-        if (CanGrapple() && UserInput.GetLeftMouseButtonDown())
-        {
-            FireGrapple();
-        }
-        else if (_isGrappled)
-        {
-            DetectGrappleLineCollision();
-            DrawLine();
-            ReelGrapple();
-            DetachGrappleOnClick();     
-        }
-    }
-
-    private bool CanGrapple()
-    {
-        return !_isGrappled;
-    }
-
-    private void FireGrapple()
-    {
-        var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
-        var hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange, groundLayer) ;
-
-        if (HitGrappleableComponent(ref hit))
-        {
-            distanceJoint.connectedAnchor = hit.point;
-            distanceJoint.enabled = true;
-            lineRenderer.enabled = true;
-            _isGrappled = true;
-        }
-    }
-
-    private static bool HitGrappleableComponent(ref RaycastHit2D hit)
-    {
-        if (hit.collider == null)
-        {
-            return false;
-        }
-        var hasGrappleProperties = hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
-        return hit && hasGrappleProperties && grappleProperties.grappleable; 
-    }
-
-    private static bool HitSwingableComponent(ref RaycastHit2D hit)
-    {
-        if (hit.collider == null)
-        {
-            return false;
-        }
-        var hasGrappleProperties = hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
-        return hit && hasGrappleProperties && grappleProperties.swingable;
-    }
-
-    private void DetectGrappleLineCollision()
-    {
-        var world_anchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
-
-        var connected_anchor = distanceJoint.connectedAnchor;
-
-        Vector2 direction = (connected_anchor - world_anchor).normalized;
-        var hit = Physics2D.Linecast(world_anchor, connected_anchor - (direction * 0.1f), groundLayer);
-
-        if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(ref hit))
-        {
-            hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
-
-            var closestPointOnPerimeter = grappleProperties.GetClosestCorner(hit.point);
-            distanceJoint.connectedAnchor = closestPointOnPerimeter;
-        }
-    }
-    private void DrawLine()
-    {
-        var world_anchor = transform.TransformPoint(distanceJoint.anchor);
-        lineRenderer.SetPosition(0, world_anchor);
-        lineRenderer.SetPosition(1, distanceJoint.connectedAnchor);
-    }
-
-    private void ReelGrapple()
-    {
-        var grappleVerticalSpeed = UserInput.GetVerticalValue() * grappleReelSpeed;
-        if (CanReelGrapple(grappleVerticalSpeed))
-        {
-            distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
-            SolveGrappleCollisions();
-        }
-    }
-
-    private bool CanReelGrapple(float grappleVerticalSpeed)
-    {
-        bool canReelIn = grappleVerticalSpeed > 0 && distanceJoint.distance > minRange;
-        bool canReelOut = grappleVerticalSpeed < 0 && distanceJoint.distance < maxRange;
-        return canReelIn || canReelOut;
-    }
-
-    private void SolveGrappleCollisions()
-    {
-        Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
-        foreach (var hit in hits)
-        {
-            if (hit == boxCollider)
-                continue;
-            ColliderDistance2D colliderDistance = hit.Distance(boxCollider);
-            if (colliderDistance.isOverlapped)
-            {
-                transform.Translate(colliderDistance.pointA - colliderDistance.pointB);
-            }
-        }
-    }
-
-    private void DetachGrappleOnClick()
-    {
-        if (UserInput.GetLeftMouseButtonDown())
-        {
-            DetachGrapple();
-        }
-    }
-
-    public void DetachGrapple()
-    {
-        distanceJoint.enabled = false;
-        lineRenderer.enabled = false;
-        _isGrappled = false;
-    }
+        grapplingHook.DetachGrapple();
+    }    
 }
