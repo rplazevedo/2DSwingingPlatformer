@@ -70,7 +70,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        var xForce = UserInput.GetHorizontalValue() * GetAcceleration();
+        var xForce = UserInput.GetHorizontalValue() * GetAcceleration(isGrounded);
         if (xForce == 0)
         {
             return;
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
 
         var isForceSpeedSameDirection = xForce * currentXVelocity > 0;
 
-        var maxSpeed = GetMaxSpeed();
+        var maxSpeed = GetMaxSpeed(isGrounded);
         var isSpeedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
 
         if(isForceSpeedSameDirection && isSpeedOverMaxSpeed)
@@ -99,14 +99,14 @@ public class Player : MonoBehaviour
         body.AddForce(force, ForceMode2D.Force);
     }
 
-    private float GetAcceleration()
+    private float GetAcceleration(bool isGrounded)
     {
-        return IsGrounded() ? groundAcceleration : airAcceleration;
+        return isGrounded ? groundAcceleration : airAcceleration;
     }
 
-    private float GetMaxSpeed()
+    private float GetMaxSpeed(bool isGrounded)
     {
-        return IsGrounded() ? maxGroundSpeed : maxAirSpeed;
+        return isGrounded ? maxGroundSpeed : maxAirSpeed;
     }
 
     private void AdjustFriction(bool isGrounded)
