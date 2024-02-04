@@ -4,7 +4,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float maxGroundSpeed = 5;
+    [SerializeField, Range(1, 50)] private float maxGroundSpeed = 5;
     [SerializeField] private float groundAcceleration = 5;
     [SerializeField] private bool allowAirMovement = true;
     [SerializeField] private float maxAirSpeed = 5;
@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     [SerializeField] private PhysicsMaterial2D lowFrictionMaterial;
 
     [Header("Collision")]
-    [SerializeField] private Collider2D playerCollider;
+    [SerializeField] private Collider2D playerCollider; 
     [SerializeField] private Rigidbody2D body;
     [SerializeField] private LayerMask groundLayer;
     private Vector3 startPosition;
@@ -33,13 +33,14 @@ public class Player : MonoBehaviour
         {
             maxRange = 1000000;
         }
+
         grapplingHook = gameObject.AddComponent<GrapplingHook>();
         grapplingHook.Initialize(maxRange, minRange, grappleReelSpeed);
 
         startPosition = transform.position;
     }
 
-    void Update()
+    private void Update()
     {
         if (!grapplingHook.IsGrappled())
         { 
@@ -51,16 +52,27 @@ public class Player : MonoBehaviour
 
     private void Move()
     {
-        var isGrounded = IsGrounded();
+        var isGrounded = IsPlayerGrounded();
 
+        ApplyCorrectFrictionMaterial(isGrounded);
         HorizontalMovement(isGrounded);
-
-        AdjustFriction(isGrounded);
-
+        
         if (ShouldJump(isGrounded))
         {
             Jump();
         }
+    }
+
+    private bool IsPlayerGrounded()
+    {
+        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
+
+        return collisionHit.collider != null;
+    }
+
+    private void ApplyCorrectFrictionMaterial(bool isGrounded)
+    {
+        body.sharedMaterial = isGrounded ? highFrictionMaterial : lowFrictionMaterial;
     }
 
     private void HorizontalMovement(bool isGrounded)
@@ -76,27 +88,22 @@ public class Player : MonoBehaviour
             return;
         }
 
-        var currentXVelocity = body.velocity.x;
-
-        var isForceSpeedSameDirection = xForce * currentXVelocity > 0;
-
         var maxSpeed = GetMaxSpeed(isGrounded);
-        var isSpeedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
+        if (HorizontalForceShouldBeApplied(xForce, maxSpeed))
+        {
+            var force = new Vector2(xForce, 0);
 
-        if(isForceSpeedSameDirection && isSpeedOverMaxSpeed)
-        {   
-            // This if statement smooths out movement on the ground, but prevents player from sliding if
-            // holding same movement key as current direction. Haven't found another way to smooth movement though.
-            if (isGrounded)
-            {
-                body.velocity = new Vector2(Mathf.Sign(currentXVelocity) * maxSpeed, body.velocity.y);
-            }
+            body.AddForce(force, ForceMode2D.Force);
             return;
         }
 
-        var force = new Vector2(xForce, 0);
-
-        body.AddForce(force, ForceMode2D.Force);
+        // This if statement smooths out movement on the ground, but prevents player from sliding if
+        // holding same movement key as current direction. Haven't found another way to smooth movement though.
+        if (isGrounded)
+        {
+            var newHorizontalVelocity = Mathf.Sign(body.velocity.x) * maxSpeed;
+            body.velocity = new Vector2(newHorizontalVelocity, body.velocity.y);
+        }
     }
 
     private float GetAcceleration(bool isGrounded)
@@ -109,21 +116,18 @@ public class Player : MonoBehaviour
         return isGrounded ? maxGroundSpeed : maxAirSpeed;
     }
 
-    private void AdjustFriction(bool isGrounded)
+    private bool HorizontalForceShouldBeApplied(float xForce, float maxSpeed)
     {
-        body.sharedMaterial = isGrounded ? highFrictionMaterial : lowFrictionMaterial;
+        var currentXVelocity = body.velocity.x;
+        var isForceSpeedSameDirection = xForce * currentXVelocity > 0;
+        var isSpeedOverMaxSpeed = Mathf.Abs(currentXVelocity) >= maxSpeed;
+
+        return !isForceSpeedSameDirection || !isSpeedOverMaxSpeed;
     }
 
     private bool ShouldJump(bool isGrounded)
     {
         return UserInput.IsPressingJump() && isGrounded;
-    }
-
-    private bool IsGrounded()
-    {
-        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
-
-        return collisionHit.collider != null;
     }
 
     private void Jump()
