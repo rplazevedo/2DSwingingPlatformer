@@ -143,7 +143,7 @@ public class GrapplingHook : MonoBehaviour
         if (CanReelGrapple(grappleVerticalSpeed))
         {
             distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
-            SolveGrappleCollisions();
+            ResolveGrappleCollisions();
         }
     }
 
@@ -155,7 +155,7 @@ public class GrapplingHook : MonoBehaviour
         return canReelIn || canReelOut;
     }
 
-    private void SolveGrappleCollisions()
+    private void ResolveGrappleCollisions()
     {
         var hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
         foreach (var hit in hits)
