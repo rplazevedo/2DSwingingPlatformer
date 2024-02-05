@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
         }
 
         grapplingHook = gameObject.AddComponent<GrapplingHook>();
-        grapplingHook.Initialize(maxRange, minRange, grappleReelSpeed);
+        grapplingHook.Initialize(maxRange, minRange, grappleReelSpeed, groundLayer);
 
         startPosition = transform.position;
     }
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
             Move();
         }
         
-        grapplingHook.Grapple(groundLayer);
+        grapplingHook.Grapple();
     }
 
     private void Move()

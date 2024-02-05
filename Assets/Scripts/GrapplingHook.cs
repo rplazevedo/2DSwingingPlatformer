@@ -10,8 +10,7 @@ public class GrapplingHook : MonoBehaviour
     private DistanceJoint2D distanceJoint;
     private LineRenderer lineRenderer;
     private BoxCollider2D boxCollider;
-
-
+    private LayerMask groundLayer;
     private float maxRange = 50f;
     private float minRange = 0f;
     private float grappleReelSpeed = 5f;
@@ -25,31 +24,34 @@ public class GrapplingHook : MonoBehaviour
         cam = Camera.main;
     }
 
-    internal void Initialize(float maxRange, float minRange, float grappleReelSpeed)
+    internal void Initialize(float maxRange, float minRange, float grappleReelSpeed, LayerMask groundLayer)
     {
         this.maxRange = maxRange;
         this.minRange = minRange;
         this.grappleReelSpeed = grappleReelSpeed;
+        this.groundLayer = groundLayer;
     }
 
-    internal void Grapple(LayerMask groundLayer)
+    internal void Grapple()
     {
-        if (CanGrapple() && UserInput.GetLeftMouseButtonDown())
+        if (ShouldFireGrapple())
         {
-            FireGrapple(groundLayer);
+            FireGrapple();
+            return;
         }
-        else if (_isGrappled)
+
+        if (IsGrappled())
         {
-            UpdateGrapplingHook(groundLayer);
+            UpdateGrapplingHook();
         }
     }
 
-    private bool CanGrapple()
+    private bool ShouldFireGrapple()
     {
-        return !_isGrappled;
+        return !IsGrappled() && UserInput.GetLeftMouseButtonDown();
     }
 
-    private void FireGrapple(LayerMask groundLayer)
+    private void FireGrapple()
     {
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
         var hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange, groundLayer);
@@ -73,15 +75,15 @@ public class GrapplingHook : MonoBehaviour
         return hit && hasGrappleProperties && grappleProperties.grappleable;
     }
 
-    private void UpdateGrapplingHook(LayerMask groundLayer)
+    private void UpdateGrapplingHook()
     {
-        DetectGrappleLineCollision(groundLayer);
+        DetectGrappleLineCollision();
         DrawLine();
         ReelGrapple();
         DetachGrappleOnClick();
     }
 
-    private void DetectGrappleLineCollision(LayerMask groundLayer)
+    private void DetectGrappleLineCollision()
     {
         var world_anchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
 
