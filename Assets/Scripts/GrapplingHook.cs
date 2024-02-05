@@ -2,6 +2,14 @@
 using Assets.Scripts.Input;
 using UnityEngine;
 
+public class GrapplingHookProperties
+{
+    public float MaxRange { get; internal set; }
+    public float MinRange { get; internal set; }
+    public float Speed { get; internal set; }
+    public LayerMask GroundLayer { get; internal set; }
+}
+
 public class GrapplingHook : MonoBehaviour
 {
     private Camera cam;
@@ -24,12 +32,12 @@ public class GrapplingHook : MonoBehaviour
         cam = Camera.main;
     }
 
-    internal void Initialize(float maxRange, float minRange, float grappleReelSpeed, LayerMask groundLayer)
+    internal void Initialize(GrapplingHookProperties grapppingHookProperties)
     {
-        this.maxRange = maxRange;
-        this.minRange = minRange;
-        this.grappleReelSpeed = grappleReelSpeed;
-        this.groundLayer = groundLayer;
+        maxRange = grapppingHookProperties.MaxRange;
+        minRange = grapppingHookProperties.MinRange;
+        grappleReelSpeed = grapppingHookProperties.Speed;
+        groundLayer = grapppingHookProperties.GroundLayer;
     }
 
     internal void Grapple()
@@ -57,7 +65,7 @@ public class GrapplingHook : MonoBehaviour
         var linecastEnd = (mouseCoord - transform.position) * maxRange;
         var hit = CheckForHit(transform.position, linecastEnd);
 
-        if (HitGrappleableComponent(ref hit))
+        if (HitGrappleableComponent(hit))
         {
             distanceJoint.connectedAnchor = hit.point;
             distanceJoint.enabled = true;
@@ -71,7 +79,7 @@ public class GrapplingHook : MonoBehaviour
         return Physics2D.Linecast(linecastStart, linecastEnd, groundLayer);
     }
 
-    private static bool HitGrappleableComponent(ref RaycastHit2D hit)
+    private static bool HitGrappleableComponent(RaycastHit2D hit)
     {
         if (hit.collider == null)
         {
@@ -103,7 +111,7 @@ public class GrapplingHook : MonoBehaviour
         var linecastEnd = connected_anchor - (direction * 0.1f);
         var hit = CheckForHit(world_anchor, linecastEnd);
 
-        if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(ref hit))
+        if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(hit))
         {
             hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
 
@@ -112,7 +120,7 @@ public class GrapplingHook : MonoBehaviour
         }
     }
 
-    private static bool HitSwingableComponent(ref RaycastHit2D hit)
+    private static bool HitSwingableComponent(RaycastHit2D hit)
     {
         if (hit.collider == null)
         {
@@ -143,12 +151,13 @@ public class GrapplingHook : MonoBehaviour
     {
         bool canReelIn = grappleVerticalSpeed > 0 && distanceJoint.distance > minRange;
         bool canReelOut = grappleVerticalSpeed < 0 && distanceJoint.distance < maxRange;
+
         return canReelIn || canReelOut;
     }
 
     private void SolveGrappleCollisions()
     {
-        Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
+        var hits = Physics2D.OverlapBoxAll(transform.position, boxCollider.size, 0);
         foreach (var hit in hits)
         {
             if (hit == boxCollider)
