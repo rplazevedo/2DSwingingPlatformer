@@ -54,7 +54,8 @@ public class GrapplingHook : MonoBehaviour
     private void FireGrapple()
     {
         var mouseCoord = cam.ScreenToWorldPoint(Input.mousePosition);
-        var hit = Physics2D.Linecast(transform.position, (mouseCoord - transform.position) * maxRange, groundLayer);
+        var linecastEnd = (mouseCoord - transform.position) * maxRange;
+        var hit = CheckForHit(transform.position, linecastEnd);
 
         if (HitGrappleableComponent(ref hit))
         {
@@ -63,6 +64,11 @@ public class GrapplingHook : MonoBehaviour
             lineRenderer.enabled = true;
             _isGrappled = true;
         }
+    }
+
+    private RaycastHit2D CheckForHit(Vector3 linecastStart, Vector3 linecastEnd)
+    {
+        return Physics2D.Linecast(linecastStart, linecastEnd, groundLayer);
     }
 
     private static bool HitGrappleableComponent(ref RaycastHit2D hit)
@@ -79,8 +85,12 @@ public class GrapplingHook : MonoBehaviour
     {
         DetectGrappleLineCollision();
         DrawLine();
-        ReelGrapple();
-        DetachGrappleOnClick();
+        ReelGrapple(); 
+        
+        if (UserInput.GetLeftMouseButtonDown())
+        {
+            DetachGrapple();
+        }
     }
 
     private void DetectGrappleLineCollision()
@@ -89,8 +99,9 @@ public class GrapplingHook : MonoBehaviour
 
         var connected_anchor = distanceJoint.connectedAnchor;
 
-        Vector2 direction = (connected_anchor - world_anchor).normalized;
-        var hit = Physics2D.Linecast(world_anchor, connected_anchor - (direction * 0.1f), groundLayer);
+        var direction = (connected_anchor - world_anchor).normalized;
+        var linecastEnd = connected_anchor - (direction * 0.1f);
+        var hit = CheckForHit(world_anchor, linecastEnd);
 
         if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(ref hit))
         {
@@ -141,20 +152,15 @@ public class GrapplingHook : MonoBehaviour
         foreach (var hit in hits)
         {
             if (hit == boxCollider)
+            {
                 continue;
-            ColliderDistance2D colliderDistance = hit.Distance(boxCollider);
+            }
+
+            var colliderDistance = hit.Distance(boxCollider);
             if (colliderDistance.isOverlapped)
             {
                 transform.Translate(colliderDistance.pointA - colliderDistance.pointB);
             }
-        }
-    }
-
-    private void DetachGrappleOnClick()
-    {
-        if (UserInput.GetLeftMouseButtonDown())
-        {
-            DetachGrapple();
         }
     }
 
