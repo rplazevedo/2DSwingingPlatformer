@@ -17,7 +17,6 @@ public class Player : MonoBehaviour
     [SerializeField] private Collider2D playerCollider; 
     [SerializeField] private Rigidbody2D body;
     [SerializeField] private LayerMask groundLayer;
-    private Vector3 startPosition;
 
     [Header("Grappling")]
     [SerializeField] private float maxRange = 50f;
@@ -25,6 +24,7 @@ public class Player : MonoBehaviour
     [SerializeField] private bool infiniteRange = false;
     [SerializeField] private float grappleReelSpeed = 5f;
 
+    private Vector3 startPosition;
     private GrapplingHook grapplingHook;
 
     private void Awake()
@@ -74,7 +74,13 @@ public class Player : MonoBehaviour
 
     private bool IsPlayerGrounded()
     {
-        var collisionHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
+        var collisionHit = Physics2D.BoxCast(
+            playerCollider.bounds.center, 
+            playerCollider.bounds.size, 
+            0f, 
+            Vector2.down, 
+            0.1f, 
+            groundLayer);
 
         return collisionHit.collider != null;
     }
