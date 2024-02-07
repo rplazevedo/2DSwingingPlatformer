@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts;
 using Assets.Scripts.Input;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GrapplingHookProperties
@@ -17,6 +18,7 @@ public class GrapplingHook : MonoBehaviour
     private bool _isGrappled;
     private DistanceJoint2D distanceJoint;
     private LineRenderer lineRenderer;
+    private List<Vector3> connectedPoints;
     private BoxCollider2D boxCollider;
     private LayerMask groundLayer;
     private float maxRange = 50f;
@@ -28,6 +30,7 @@ public class GrapplingHook : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         distanceJoint = GetComponent<DistanceJoint2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        connectedPoints = new List<Vector3>();
 
         cam = Camera.main;
     }
@@ -70,6 +73,10 @@ public class GrapplingHook : MonoBehaviour
             distanceJoint.connectedAnchor = hit.point;
             distanceJoint.enabled = true;
             lineRenderer.enabled = true;
+            var playerAnchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
+            connectedPoints.Clear();
+            connectedPoints.Add(playerAnchor);
+            connectedPoints.Add(hit.point);
             _isGrappled = true;
         }
     }
@@ -86,10 +93,11 @@ public class GrapplingHook : MonoBehaviour
             return false;
         }
         var hasGrappleProperties = hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
-        return hit && hasGrappleProperties && grappleProperties.grappleable;
+        return hasGrappleProperties && grappleProperties.grappleable;
     }
 
     private void UpdateGrapplingHook()
+
     {
         DetectGrappleLineCollision();
         DrawLine();
@@ -100,16 +108,15 @@ public class GrapplingHook : MonoBehaviour
             DetachGrapple();
         }
     }
-
     private void DetectGrappleLineCollision()
     {
-        var world_anchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
+        var playerAnchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
 
-        var connected_anchor = distanceJoint.connectedAnchor;
+        var connectedAnchor = distanceJoint.connectedAnchor;
 
-        var direction = (connected_anchor - world_anchor).normalized;
-        var linecastEnd = connected_anchor - (direction * 0.1f);
-        var hit = CheckForHit(world_anchor, linecastEnd);
+        var direction = (connectedAnchor - playerAnchor).normalized;
+        var linecastEnd = connectedAnchor - (direction * 0.1f);
+        var hit = CheckForHit(playerAnchor, linecastEnd);
 
         if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(hit))
         {
@@ -117,6 +124,7 @@ public class GrapplingHook : MonoBehaviour
 
             var closestPointOnPerimeter = grappleProperties.GetClosestCorner(hit.point);
             distanceJoint.connectedAnchor = closestPointOnPerimeter;
+            connectedPoints.Insert(1, distanceJoint.connectedAnchor);
         }
     }
 
@@ -133,8 +141,9 @@ public class GrapplingHook : MonoBehaviour
     private void DrawLine()
     {
         var world_anchor = transform.TransformPoint(distanceJoint.anchor);
-        lineRenderer.SetPosition(0, world_anchor);
-        lineRenderer.SetPosition(1, distanceJoint.connectedAnchor);
+        connectedPoints[0] = world_anchor;
+        lineRenderer.SetPositions(connectedPoints.ToArray());
+        lineRenderer.positionCount = connectedPoints.Count;
     }
 
     private void ReelGrapple()
