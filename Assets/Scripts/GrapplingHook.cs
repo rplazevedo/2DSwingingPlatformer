@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts;
 using Assets.Scripts.Input;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class GrapplingHookProperties
@@ -99,7 +101,9 @@ public class GrapplingHook : MonoBehaviour
     private void UpdateGrapplingHook()
 
     {
+        
         DetectGrappleLineCollision();
+        Unwrap();
         DrawLine();
         ReelGrapple(); 
         
@@ -108,6 +112,26 @@ public class GrapplingHook : MonoBehaviour
             DetachGrapple();
         }
     }
+
+    private void Unwrap()
+    {
+        if (connectedPoints.Count <= 2)
+        { 
+            return;
+        }
+        var lastPoint = (Vector2)connectedPoints[2];
+
+        var playerAnchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
+        var direction = (lastPoint - playerAnchor).normalized;
+        var linecastEnd = lastPoint - (direction * 0.1f);
+        var hit = CheckForHit(playerAnchor, linecastEnd);
+        if (! hit )
+        {
+            distanceJoint.connectedAnchor = lastPoint;
+            connectedPoints.RemoveAt(1);
+        }
+    }
+
     private void DetectGrappleLineCollision()
     {
         var playerAnchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
