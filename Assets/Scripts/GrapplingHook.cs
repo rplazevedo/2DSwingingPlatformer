@@ -1,8 +1,6 @@
 ﻿using Assets.Scripts;
 using Assets.Scripts.Input;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public class GrapplingHookProperties
@@ -172,18 +170,18 @@ public class GrapplingHook : MonoBehaviour
 
     private void ReelGrapple()
     {
-        var grappleVerticalSpeed = UserInput.GetVerticalValue() * grappleReelSpeed;
-        if (CanReelGrapple(grappleVerticalSpeed))
+        var currentReelSpeed = UserInput.GetVerticalValue() * grappleReelSpeed;
+        if (CanReelGrapple(currentReelSpeed))
         {
-            distanceJoint.distance -= grappleVerticalSpeed * Time.deltaTime;
+            distanceJoint.distance -= currentReelSpeed * Time.deltaTime;
             ResolveGrappleCollisions();
         }
     }
 
-    private bool CanReelGrapple(float grappleVerticalSpeed)
+    private bool CanReelGrapple(float currentReelSpeed)
     {
-        bool canReelIn = grappleVerticalSpeed > 0 && distanceJoint.distance > minRange;
-        bool canReelOut = grappleVerticalSpeed < 0 && distanceJoint.distance < maxRange;
+        var canReelIn = currentReelSpeed > 0 && distanceJoint.distance > minRange;
+        var canReelOut = currentReelSpeed < 0 && distanceJoint.distance < maxRange;
 
         return canReelIn || canReelOut;
     }
