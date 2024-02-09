@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts;
+using Assets.Scripts.Extensions;
 using Assets.Scripts.Input;
 using System.Collections.Generic;
 using UnityEngine;
@@ -73,7 +74,7 @@ public class GrapplingHook : MonoBehaviour
             distanceJoint.connectedAnchor = hit.point;
             distanceJoint.enabled = true;
             lineRenderer.enabled = true;
-            var playerAnchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
+            var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
             connectedPoints.Clear();
             connectedPoints.Add(playerAnchor);
             connectedPoints.Add(hit.point);
@@ -111,7 +112,7 @@ public class GrapplingHook : MonoBehaviour
 
     private void CheckAndHandleWrapping()
     {
-        var playerAnchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
+        var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
 
         var connectedAnchor = distanceJoint.connectedAnchor;
 
@@ -148,7 +149,7 @@ public class GrapplingHook : MonoBehaviour
 
         var lastPoint = (Vector2)connectedPoints[2];
 
-        var playerAnchor = (Vector2)transform.TransformPoint(distanceJoint.anchor);
+        var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
         var direction = (lastPoint - playerAnchor).normalized;
         var linecastEnd = lastPoint - (direction * 0.1f);
         var hit = CheckForHit(playerAnchor, linecastEnd);
