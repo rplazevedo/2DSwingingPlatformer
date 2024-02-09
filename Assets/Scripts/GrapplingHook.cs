@@ -2,6 +2,7 @@
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Input;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GrapplingHookProperties
@@ -150,11 +151,15 @@ public class GrapplingHook : MonoBehaviour
         var lastPoint = (Vector2)connectedPoints[2];
 
         var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
-        var direction = (lastPoint - playerAnchor).normalized;
-        var linecastEnd = lastPoint - (direction * 0.1f);
+        var currentDirection = (distanceJoint.connectedAnchor - playerAnchor).normalized;
+        var lastDirection = (lastPoint - playerAnchor).normalized;
+        var linecastEnd = lastPoint - (lastDirection * 0.1f);
         var hit = CheckForHit(playerAnchor, linecastEnd);
 
-        if (!hit)
+        var angle = Vector3.Angle(currentDirection, lastDirection);
+        var isSameAngle = angle <= 1f;
+
+        if (!hit && isSameAngle)
         {
             distanceJoint.connectedAnchor = lastPoint;
             connectedPoints.RemoveAt(1);
