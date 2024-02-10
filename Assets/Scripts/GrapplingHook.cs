@@ -180,8 +180,7 @@ public class GrapplingHook : MonoBehaviour
     {
         var world_anchor = transform.TransformPoint(distanceJoint.anchor);
         connectedPoints[0] = world_anchor;
-        lineRenderer.SetPositions(connectedPoints.ToArray());
-        lineRenderer.positionCount = connectedPoints.Count;
+        lineRenderer.UpdateLinePoints(connectedPoints);
     }
 
     private void ReelGrapple()
