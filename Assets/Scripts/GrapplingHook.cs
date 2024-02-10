@@ -72,14 +72,7 @@ public class GrapplingHook : MonoBehaviour
 
         if (HitGrappleableComponent(hit))
         {
-            distanceJoint.connectedAnchor = hit.point;
-            distanceJoint.enabled = true;
-            lineRenderer.enabled = true;
-            var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
-            connectedPoints.Clear();
-            connectedPoints.Add(playerAnchor);
-            connectedPoints.Add(hit.point);
-            _isGrappled = true;
+            ConnectGrapple(hit);
         }
     }
 
@@ -88,14 +81,30 @@ public class GrapplingHook : MonoBehaviour
         return Physics2D.Linecast(linecastStart, linecastEnd, groundLayer);
     }
 
-    private static bool HitGrappleableComponent(RaycastHit2D hit)
+    private bool HitGrappleableComponent(RaycastHit2D hit)
     {
-        if (hit.collider == null)
+        if (!hit)
         {
             return false;
         }
+
         var hasGrappleProperties = hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
         return hasGrappleProperties && grappleProperties.grappleable;
+    }
+
+    private void ConnectGrapple(RaycastHit2D hit)
+    {
+        distanceJoint.connectedAnchor = hit.point;
+        distanceJoint.enabled = true;
+        lineRenderer.enabled = true;
+
+        var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
+
+        connectedPoints.Clear();
+        connectedPoints.Add(playerAnchor);
+        connectedPoints.Add(hit.point);
+
+        _isGrappled = true;
     }
 
     private void UpdateGrapplingHook()
@@ -121,7 +130,7 @@ public class GrapplingHook : MonoBehaviour
         var linecastEnd = connectedAnchor - (direction * 0.1f);
         var hit = CheckForHit(playerAnchor, linecastEnd);
 
-        if (hit && hit.collider.gameObject != gameObject && HitSwingableComponent(hit))
+        if (HitSwingableComponent(hit))
         {
             hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
 
@@ -131,14 +140,15 @@ public class GrapplingHook : MonoBehaviour
         }
     }
 
-    private static bool HitSwingableComponent(RaycastHit2D hit)
+    private bool HitSwingableComponent(RaycastHit2D hit)
     {
-        if (hit.collider == null)
+        if(!hit || hit.collider.gameObject == gameObject)
         {
             return false;
         }
+
         var hasGrappleProperties = hit.collider.TryGetComponent<GrappleProperties>(out var grappleProperties);
-        return hit && hasGrappleProperties && grappleProperties.swingable;
+        return hasGrappleProperties && grappleProperties.swingable;
     }
 
     private void CheckAndHandleUnwrapping()
@@ -151,7 +161,7 @@ public class GrapplingHook : MonoBehaviour
         var lastPoint = (Vector2)connectedPoints[2];
 
         var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
-        var currentDirection = (distanceJoint.connectedAnchor - playerAnchor).normalized;
+        var currentDirection = distanceJoint.connectedAnchor - playerAnchor;
         var lastDirection = (lastPoint - playerAnchor).normalized;
         var linecastEnd = lastPoint - (lastDirection * 0.1f);
         var hit = CheckForHit(playerAnchor, linecastEnd);
