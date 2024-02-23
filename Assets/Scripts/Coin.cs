@@ -5,6 +5,7 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     [SerializeField] private float floatStrength = 0.5f;
+    [SerializeField] private int scoreToAdd = 1;
 
     private float originalYPosition;
 
@@ -24,6 +25,7 @@ public class Coin : MonoBehaviour
         if (collision.CompareTag(Tags.Player))
         {
             Destroy(gameObject);
+            GameManager.instance.AddScore(scoreToAdd);
         }
     }
 }
