@@ -1,5 +1,3 @@
-using System.Drawing;
-using TMPro;
 using UnityEngine;
 
 public class PlayerCameraController : MonoBehaviour
@@ -10,8 +8,6 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] private float maxSize = 20f;
     [SerializeField] private float maxSizeSpeed = 50f;
     [SerializeField] private float minSizeSpeed = 5f;
-
-
 
     private float updateDelay = 0.25f;
     private Vector3 velocity3;
@@ -52,9 +48,9 @@ public class PlayerCameraController : MonoBehaviour
 
         return Vector3.SmoothDamp(transform.position, targetPosition, ref velocity3, updateDelay);
     }
+
     private float GetNewSize()
     {   
-
         var targetSize = minSize + (playerBody.velocity.magnitude - minSizeSpeed) / (maxSizeSpeed - minSizeSpeed) * (maxSize - minSize);
         var clampedSize = Mathf.Clamp(targetSize, minSize, maxSize);
         return Mathf.SmoothDamp(Camera.main.orthographicSize, clampedSize, ref velocity1, updateDelay);
