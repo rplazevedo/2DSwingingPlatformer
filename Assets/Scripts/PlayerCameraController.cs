@@ -49,9 +49,16 @@ public class PlayerCameraController : MonoBehaviour
     }
 
     private float GetNewSize()
-    {   
-        var targetSize = minSize + (playerBody.velocity.magnitude - minSizeSpeed) / (maxSizeSpeed - minSizeSpeed) * (maxSize - minSize);
-        var clampedSize = Mathf.Clamp(targetSize, minSize, maxSize);
-        return Mathf.SmoothDamp(Camera.main.orthographicSize, clampedSize, ref resizeVelocity, updateDelay);
+    {
+        var speedOverMinimumThreshold = playerBody.velocity.magnitude - minSizeSpeed;
+        var speedRange = maxSizeSpeed - minSizeSpeed;
+
+        var speedMultiplicationFactor = speedOverMinimumThreshold / speedRange;
+        var sizeMultiplier = Mathf.Clamp(speedMultiplicationFactor, 0, 1);
+
+        var sizeRange = maxSize - minSize;
+        var targetSize = (sizeMultiplier * sizeRange) + minSize;
+        
+        return Mathf.SmoothDamp(Camera.main.orthographicSize, targetSize, ref resizeVelocity, updateDelay);
     }
 }
