@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
     public int currentScore = 0;
 
     public static GameManager instance;
