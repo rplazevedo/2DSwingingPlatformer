@@ -100,7 +100,6 @@ public class GrapplingHook : MonoBehaviour
 
         var playerAnchor = transform.TransformPoint2D(distanceJoint.anchor);
 
-        connectedPoints.Clear();
         connectedPoints.Add(playerAnchor);
         connectedPoints.Add(hit.point);
 
@@ -224,6 +223,8 @@ public class GrapplingHook : MonoBehaviour
         distanceJoint.enabled = false;
         lineRenderer.enabled = false;
         _isGrappled = false;
+        connectedPoints.Clear();
+        lineRenderer.UpdateLinePoints(connectedPoints);
     }
 
     internal bool IsGrappled()
