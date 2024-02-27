@@ -24,6 +24,9 @@ public class Player : MonoBehaviour
     [SerializeField] private bool infiniteRange = false;
     [SerializeField] private float grappleReelSpeed = 5f;
 
+    [Header("Power-ups")]
+    [SerializeField] private int forwardBoostCount = 0;
+
     private Vector3 startPosition;
     private GrapplingHook grapplingHook;
 
@@ -57,6 +60,7 @@ public class Player : MonoBehaviour
         }
         
         grapplingHook.Grapple();
+        
     }
 
     private void Move()
@@ -149,6 +153,13 @@ public class Player : MonoBehaviour
     {
         body.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
+
+    public void AddForwardBoost()
+    {
+        forwardBoostCount++;
+        GameUI.instance.UpdateBoostCount(forwardBoostCount);
+    }
+
 
     internal void Reset()
     {
