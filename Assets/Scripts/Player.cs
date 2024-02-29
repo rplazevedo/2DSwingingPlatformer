@@ -60,6 +60,7 @@ public class Player : MonoBehaviour
         }
         
         grapplingHook.Grapple();
+        Boost();
         
     }
 
@@ -158,6 +159,11 @@ public class Player : MonoBehaviour
     {
         forwardBoostCount++;
         GameUI.instance.UpdateBoostCount(forwardBoostCount);
+    }
+
+    private void Boost()
+    {
+        body.AddForce(Vector3.up * jumpForce, ForceMode2D.Force);
     }
 
 
