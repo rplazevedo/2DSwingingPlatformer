@@ -26,6 +26,11 @@ public class GrapplingHook : MonoBehaviour
     private float maxRange = 50f;
     private float minRange = 0f;
     private float grappleReelSpeed = 5f;
+    private float lastGrappleTime;
+    private int grappleCooldown = 1;
+    // TODO Configurable cooldown
+    // TODO Make cooldown work when starting the game up (Takes 1 second for players to be able to grapple)
+    // TODO Consider a visual display of the grapple cooldown?
 
     private void Awake()
     {
@@ -61,6 +66,11 @@ public class GrapplingHook : MonoBehaviour
 
     private bool ShouldFireGrapple()
     {
+        if(Time.time < lastGrappleTime + grappleCooldown)
+        {
+            return false;
+        }
+
         return !IsGrappled() && UserInput.GetLeftMouseButtonDown();
     }
 
@@ -73,6 +83,7 @@ public class GrapplingHook : MonoBehaviour
         if (HitGrappleableComponent(hit))
         {
             ConnectGrapple(hit);
+            lastGrappleTime = Time.time;
         }
     }
 
