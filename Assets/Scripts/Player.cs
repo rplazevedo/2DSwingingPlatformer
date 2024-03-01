@@ -26,9 +26,12 @@ public class Player : MonoBehaviour
 
     [Header("Power-ups")]
     [SerializeField] private int forwardBoostCount = 0;
+    [SerializeField] private float forwardBoostStrength = 10f;
+    [SerializeField] private float forwardBoostDuration = 1f;
 
     private Vector3 startPosition;
     private GrapplingHook grapplingHook;
+    private bool _isBoosting;
 
     private void Awake()
     {
@@ -162,8 +165,26 @@ public class Player : MonoBehaviour
     }
 
     private void Boost()
-    {
-        body.AddForce(Vector3.up * jumpForce, ForceMode2D.Force);
+    {   
+        if (!_isBoosting && (forwardBoostCount == 0 || !UserInput.IsPressingForwardBoost()))
+        {
+            return;
+        }
+
+        if (!_isBoosting && forwardBoostCount > 0 && UserInput.IsPressingForwardBoost())
+        {
+            boostStartTime = Time.time;
+            forwardBoostCount--;
+        }
+
+        _isBoosting = Time.time - boostStartTime <= forwardBoostDuration;
+
+        if (_isBoosting)
+        { 
+            currentDirection = transform.velocity.normalized;
+            boostForce = new Vector2(currentDirection.x, currentDirection.y) * forwardBoostStrength;
+            body.AddForce(boostForce, ForceMode2D.Force);
+        }
     }
 
 

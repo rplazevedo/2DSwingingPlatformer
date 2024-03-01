@@ -6,10 +6,14 @@
         public static string Vertical = "Vertical";
         public static string Jump = "Jump";
 
-
         public static bool IsPressingJump()
         {
             return UnityEngine.Input.GetButtonDown(Jump);
+        }
+
+        public static bool IsPressingForwardBoost()
+        {
+            return UnityEngine.Input.GetMouseButtonDown(1);
         }
 
         public static float GetHorizontalValue()
