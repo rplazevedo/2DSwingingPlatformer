@@ -26,8 +26,8 @@ public class Player : MonoBehaviour
 
     [Header("Power-ups")]
     [SerializeField] private int forwardBoostCount = 0;
-    [SerializeField] private float forwardBoostStrength = 10f;
-    [SerializeField] private float forwardBoostDuration = 1f;
+    [SerializeField] private float forwardBoostStrength = 1f;
+    [SerializeField] private float forwardBoostDuration = 0.5f;
 
     private Vector3 startPosition;
     private GrapplingHook grapplingHook;
@@ -176,6 +176,7 @@ public class Player : MonoBehaviour
         {
             forwardBoostStartTime = Time.time;
             forwardBoostCount--;
+            GameUI.instance.UpdateBoostCount(forwardBoostCount);
         }
 
         _isBoosting = Time.time - forwardBoostStartTime <= forwardBoostDuration;
