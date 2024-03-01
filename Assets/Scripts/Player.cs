@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     private Vector3 startPosition;
     private GrapplingHook grapplingHook;
     private bool _isBoosting;
+    private float forwardBoostStartTime;
 
     private void Awake()
     {
@@ -173,16 +174,16 @@ public class Player : MonoBehaviour
 
         if (!_isBoosting && forwardBoostCount > 0 && UserInput.IsPressingForwardBoost())
         {
-            boostStartTime = Time.time;
+            forwardBoostStartTime = Time.time;
             forwardBoostCount--;
         }
 
-        _isBoosting = Time.time - boostStartTime <= forwardBoostDuration;
+        _isBoosting = Time.time - forwardBoostStartTime <= forwardBoostDuration;
 
         if (_isBoosting)
         { 
-            currentDirection = transform.velocity.normalized;
-            boostForce = new Vector2(currentDirection.x, currentDirection.y) * forwardBoostStrength;
+            var currentDirection = body.velocity.normalized;
+            var boostForce = new Vector2(currentDirection.x, currentDirection.y) * forwardBoostStrength;
             body.AddForce(boostForce, ForceMode2D.Force);
         }
     }
