@@ -158,12 +158,6 @@ public class Player : MonoBehaviour
         body.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 
-    public void AddForwardBoost()
-    {
-        forwardBoostCount++;
-        GameUI.instance.UpdateBoostCount(forwardBoostCount);
-    }
-
     private void Boost()
     {
         var isStartingBoost = forwardBoostCount > 0 && UserInput.GetRightMouseButtonDown();
@@ -198,6 +192,12 @@ public class Player : MonoBehaviour
         var currentDirection = body.velocity.normalized;
         var boostForce = new Vector2(currentDirection.x, currentDirection.y) * forwardBoostStrength;
         body.AddForce(boostForce, ForceMode2D.Force);
+    }
+
+    public void AddForwardBoost()
+    {
+        forwardBoostCount++;
+        GameUI.instance.UpdateBoostCount(forwardBoostCount);
     }
 
     internal void Reset()
