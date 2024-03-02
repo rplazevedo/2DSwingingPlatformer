@@ -166,29 +166,40 @@ public class Player : MonoBehaviour
     }
 
     private void Boost()
-    {   
-        if (!_isBoosting && (forwardBoostCount == 0 || !UserInput.IsPressingForwardBoost()))
+    {
+        var isStartingBoost = forwardBoostCount > 0 && UserInput.IsPressingForwardBoost();
+
+        if (!_isBoosting && !isStartingBoost)
         {
             return;
         }
 
-        if (!_isBoosting && forwardBoostCount > 0 && UserInput.IsPressingForwardBoost())
+        if (!_isBoosting && isStartingBoost)
         {
-            forwardBoostStartTime = Time.time;
-            forwardBoostCount--;
-            GameUI.instance.UpdateBoostCount(forwardBoostCount);
+            ActivateBoost();
         }
 
         _isBoosting = Time.time - forwardBoostStartTime <= forwardBoostDuration;
 
         if (_isBoosting)
-        { 
-            var currentDirection = body.velocity.normalized;
-            var boostForce = new Vector2(currentDirection.x, currentDirection.y) * forwardBoostStrength;
-            body.AddForce(boostForce, ForceMode2D.Force);
+        {
+            ApplyBoost();
         }
     }
 
+    private void ActivateBoost()
+    {
+        forwardBoostStartTime = Time.time;
+        forwardBoostCount--;
+        GameUI.instance.UpdateBoostCount(forwardBoostCount);
+    }
+
+    private void ApplyBoost()
+    {
+        var currentDirection = body.velocity.normalized;
+        var boostForce = new Vector2(currentDirection.x, currentDirection.y) * forwardBoostStrength;
+        body.AddForce(boostForce, ForceMode2D.Force);
+    }
 
     internal void Reset()
     {
