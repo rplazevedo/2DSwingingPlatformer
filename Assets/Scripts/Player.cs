@@ -65,7 +65,6 @@ public class Player : MonoBehaviour
         
         grapplingHook.Grapple();
         Boost();
-        
     }
 
     private void Move()
@@ -167,7 +166,7 @@ public class Player : MonoBehaviour
 
     private void Boost()
     {
-        var isStartingBoost = forwardBoostCount > 0 && UserInput.IsPressingForwardBoost();
+        var isStartingBoost = forwardBoostCount > 0 && UserInput.GetRightMouseButtonDown();
 
         if (!_isBoosting && !isStartingBoost)
         {

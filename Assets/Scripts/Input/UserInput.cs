@@ -11,11 +11,6 @@
             return UnityEngine.Input.GetButtonDown(Jump);
         }
 
-        public static bool IsPressingForwardBoost()
-        {
-            return UnityEngine.Input.GetMouseButtonDown(1);
-        }
-
         public static float GetHorizontalValue()
         {
             return UnityEngine.Input.GetAxis(Horizontal);
@@ -29,6 +24,11 @@
         public static bool GetLeftMouseButtonDown()
         {
             return UnityEngine.Input.GetMouseButtonDown(0);
+        }
+
+        public static bool GetRightMouseButtonDown()
+        {
+            return UnityEngine.Input.GetMouseButtonDown(1);
         }
 
     }
