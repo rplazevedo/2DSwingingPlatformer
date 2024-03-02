@@ -21,6 +21,5 @@ public class GameUI : MonoBehaviour
     public void UpdateBoostCount(int forwardBoostCount)
     {
         forwardBoostText.text = $"Boosts: {forwardBoostCount}";
-
     }
 }

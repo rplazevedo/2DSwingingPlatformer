@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
         instance = this;
         GameUI.instance.UpdateScoreText(currentScore);
         GameUI.instance.UpdateBoostCount(0);
-
     }
 
     public void AddScore(int score)
