@@ -5,6 +5,7 @@ public class GameUI : MonoBehaviour
 {
     [Header("HUD")]
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI forwardBoostText;
 
     public static GameUI instance;
 
@@ -15,5 +16,10 @@ public class GameUI : MonoBehaviour
     public void UpdateScoreText(int score)
     {
         scoreText.text = $"Score: {score}";
+    }
+
+    public void UpdateBoostCount(int forwardBoostCount)
+    {
+        forwardBoostText.text = $"Boosts: {forwardBoostCount}";
     }
 }
