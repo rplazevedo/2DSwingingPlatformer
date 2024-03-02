@@ -18,7 +18,6 @@ public class GameUI : MonoBehaviour
         scoreText.text = $"Score: {score}";
     }
 
-
     public void UpdateBoostCount(int forwardBoostCount)
     {
         forwardBoostText.text = $"Boosts: {forwardBoostCount}";
