@@ -25,8 +25,15 @@ public class Player : MonoBehaviour
     [SerializeField] private float grappleReelSpeed = 5f;
     [SerializeField] private float grappleCooldown = 1f;
 
+    [Header("Power-ups")]
+    [SerializeField] private int forwardBoostCount = 0;
+    [SerializeField] private float forwardBoostStrength = 1f;
+    [SerializeField] private float forwardBoostDuration = 0.5f;
+
     private Vector3 startPosition;
     private GrapplingHook grapplingHook;
+    private bool _isBoosting;
+    private float forwardBoostStartTime;
 
     private void Awake()
     {
@@ -59,6 +66,7 @@ public class Player : MonoBehaviour
         }
         
         grapplingHook.Grapple();
+        Boost();
     }
 
     private void Move()
@@ -150,6 +158,48 @@ public class Player : MonoBehaviour
     private void Jump()
     {
         body.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+    }
+
+    private void Boost()
+    {
+        var isStartingBoost = forwardBoostCount > 0 && UserInput.GetRightMouseButtonDown();
+
+        if (!_isBoosting && !isStartingBoost)
+        {
+            return;
+        }
+
+        if (!_isBoosting && isStartingBoost)
+        {
+            ActivateBoost();
+        }
+
+        _isBoosting = Time.time - forwardBoostStartTime <= forwardBoostDuration;
+
+        if (_isBoosting)
+        {
+            ApplyBoost();
+        }
+    }
+
+    private void ActivateBoost()
+    {
+        forwardBoostStartTime = Time.time;
+        forwardBoostCount--;
+        GameUI.instance.UpdateBoostCount(forwardBoostCount);
+    }
+
+    private void ApplyBoost()
+    {
+        var currentDirection = body.velocity.normalized;
+        var boostForce = new Vector2(currentDirection.x, currentDirection.y) * forwardBoostStrength;
+        body.AddForce(boostForce, ForceMode2D.Force);
+    }
+
+    public void AddForwardBoost()
+    {
+        forwardBoostCount++;
+        GameUI.instance.UpdateBoostCount(forwardBoostCount);
     }
 
     internal void Reset()
