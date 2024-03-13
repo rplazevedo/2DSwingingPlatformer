@@ -29,7 +29,6 @@ public class GrapplingHook : MonoBehaviour
     private float grappleReelSpeed = 5f;
     private float lastGrappleTime = float.MinValue;
     private float grappleCooldown;
-    // TODO Make cooldown work when starting the game up (Takes 1 second for players to be able to grapple)
 
     private void Awake()
     {
