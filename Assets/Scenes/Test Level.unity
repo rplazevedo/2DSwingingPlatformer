@@ -486,6 +486,10 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7466237951563603120, guid: bd59485deaae6d846bfb655908765787, type: 3}
+      propertyPath: grappleCooldown
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7466237951563603120, guid: bd59485deaae6d846bfb655908765787, type: 3}
       propertyPath: lowFrictionMaterial
       value: 
       objectReference: {fileID: 6200000, guid: 862f674543dac644cb9bef50cda86640, type: 2}
