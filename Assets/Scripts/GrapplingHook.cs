@@ -2,7 +2,6 @@
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Input;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GrapplingHookProperties
@@ -11,6 +10,7 @@ public class GrapplingHookProperties
     public float MinRange { get; internal set; }
     public float Speed { get; internal set; }
     public LayerMask GroundLayer { get; internal set; }
+    public float GrappleCooldown { get; internal set; }
 }
 
 public class GrapplingHook : MonoBehaviour
@@ -26,6 +26,8 @@ public class GrapplingHook : MonoBehaviour
     private float maxRange = 50f;
     private float minRange = 0f;
     private float grappleReelSpeed = 5f;
+    private float lastGrappleTime = float.MinValue;
+    private float grappleCooldown;
 
     private void Awake()
     {
@@ -37,12 +39,13 @@ public class GrapplingHook : MonoBehaviour
         cam = Camera.main;
     }
 
-    internal void Initialize(GrapplingHookProperties grapppingHookProperties)
+    internal void Initialize(GrapplingHookProperties grapplingHookProperties)
     {
-        maxRange = grapppingHookProperties.MaxRange;
-        minRange = grapppingHookProperties.MinRange;
-        grappleReelSpeed = grapppingHookProperties.Speed;
-        groundLayer = grapppingHookProperties.GroundLayer;
+        maxRange = grapplingHookProperties.MaxRange;
+        minRange = grapplingHookProperties.MinRange;
+        grappleReelSpeed = grapplingHookProperties.Speed;
+        groundLayer = grapplingHookProperties.GroundLayer;
+        grappleCooldown = grapplingHookProperties.GrappleCooldown;
     }
 
     internal void Grapple()
@@ -61,6 +64,11 @@ public class GrapplingHook : MonoBehaviour
 
     private bool ShouldFireGrapple()
     {
+        if(Time.time < lastGrappleTime + grappleCooldown)
+        {
+            return false;
+        }
+
         return !IsGrappled() && UserInput.GetLeftMouseButtonDown();
     }
 
@@ -225,6 +233,7 @@ public class GrapplingHook : MonoBehaviour
         _isGrappled = false;
         connectedPoints.Clear();
         lineRenderer.UpdateLinePoints(connectedPoints);
+        lastGrappleTime = Time.time;
     }
 
     internal bool IsGrappled()

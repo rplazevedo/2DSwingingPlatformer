@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float minRange = 0f;
     [SerializeField] private bool infiniteRange = false;
     [SerializeField] private float grappleReelSpeed = 5f;
+    [SerializeField] private float grappleCooldown = 1f;
 
     [Header("Power-ups")]
     [SerializeField] private int forwardBoostCount = 0;
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour
             MinRange = minRange,
             Speed = grappleReelSpeed,
             GroundLayer = groundLayer,
+            GrappleCooldown = grappleCooldown,
         };
 
         grapplingHook.Initialize(grapppingHookProperties);
