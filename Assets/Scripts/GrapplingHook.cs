@@ -10,7 +10,6 @@ public class GrapplingHookProperties
     public float MinRange { get; internal set; }
     public float Speed { get; internal set; }
     public LayerMask GroundLayer { get; internal set; }
-
     public float GrappleCooldown { get; internal set; }
 }
 
