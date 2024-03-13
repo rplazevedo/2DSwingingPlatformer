@@ -27,7 +27,7 @@ public class GrapplingHook : MonoBehaviour
     private float maxRange = 50f;
     private float minRange = 0f;
     private float grappleReelSpeed = 5f;
-    private float lastGrappleTime;
+    private float lastGrappleTime = float.MinValue;
     private float grappleCooldown;
     // TODO Make cooldown work when starting the game up (Takes 1 second for players to be able to grapple)
 
@@ -83,7 +83,6 @@ public class GrapplingHook : MonoBehaviour
         if (HitGrappleableComponent(hit))
         {
             ConnectGrapple(hit);
-            lastGrappleTime = Time.time;
         }
     }
 
@@ -236,6 +235,7 @@ public class GrapplingHook : MonoBehaviour
         _isGrappled = false;
         connectedPoints.Clear();
         lineRenderer.UpdateLinePoints(connectedPoints);
+        lastGrappleTime = Time.time;
     }
 
     internal bool IsGrappled()
