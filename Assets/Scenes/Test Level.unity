@@ -1995,6 +1995,7 @@ GameObject:
   - component: {fileID: 2047131070}
   - component: {fileID: 2047131071}
   - component: {fileID: 2047131073}
+  - component: {fileID: 2047131074}
   m_Layer: 6
   m_Name: Laser Gun
   m_TagString: Untagged
@@ -2128,6 +2129,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grappleable: 0
   swingable: 1
+--- !u!114 &2047131074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047131069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2b27fd924f63f4893ea9d6e25958e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  laserPrefab: {fileID: 2166726503248269563, guid: 780b37bbbaa58c84a93de2b0698ac249, type: 3}
 --- !u!1001 &2106513845
 PrefabInstance:
   m_ObjectHideFlags: 0

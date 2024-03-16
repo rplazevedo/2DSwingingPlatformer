@@ -35,8 +35,14 @@ public class Player : MonoBehaviour
     private bool _isBoosting;
     private float forwardBoostStartTime;
 
+
+
+    public static Player instance;
+
     private void Awake()
     {
+        instance = this;
+
         if (infiniteRange)
         {
             maxRange = 1000000;
@@ -206,6 +212,6 @@ public class Player : MonoBehaviour
     {
         transform.position = startPosition;
         body.velocity = Vector2.zero;
-        grapplingHook.DetachGrapple();
+        //grapplingHook.DetachGrapple();
     }    
 }

@@ -1,18 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserGun : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject laserPrefab;
+
+    private GameObject laser;
+
+    private void Awake()
     {
-        
+        laser = Instantiate(laserPrefab, transform.position, transform.rotation);
+        laser.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
-        
+        FireLaser();
+    }
+
+    private void FireLaser()
+    {
+        laser.SetActive(true);
     }
 }
