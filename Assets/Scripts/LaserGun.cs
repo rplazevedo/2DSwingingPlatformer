@@ -5,20 +5,28 @@ public class LaserGun : MonoBehaviour
     public GameObject laserPrefab;
 
     private GameObject laser;
+    private float lastLaserStateChangeTime;
+    private float laserCooldown = 5f;
 
     private void Awake()
     {
         laser = Instantiate(laserPrefab, transform.position, transform.rotation);
         laser.SetActive(false);
+        lastLaserStateChangeTime = Time.time;   
     }
 
-    void Start()
+
+    private void Update()
     {
-        FireLaser();
+        if (Time.time > lastLaserStateChangeTime + laserCooldown)
+        {
+            lastLaserStateChangeTime = Time.time;
+            ToggleLaser();
+        }
     }
 
-    private void FireLaser()
+    private void ToggleLaser()
     {
-        laser.SetActive(true);
+        laser.SetActive(!laser.activeSelf);
     }
 }
