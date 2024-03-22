@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class LaserGun : MonoBehaviour
 {
-    public GameObject laserPrefab;
+    [SerializeField] private GameObject laserPrefab;
+    [SerializeField] private float laserCooldown = 2f;
 
     private GameObject laser;
     private float lastLaserStateChangeTime;
-    private float laserCooldown = 5f;
 
     private void Awake()
     {
