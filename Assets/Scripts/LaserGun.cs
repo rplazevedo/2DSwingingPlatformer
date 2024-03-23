@@ -15,6 +15,7 @@ public class LaserGun : MonoBehaviour
     private void Awake()
     {
         laser = Instantiate(laserPrefab, transform.position, transform.rotation);
+        laser.transform.parent = transform;
         laser.SetActive(false);
         lastLaserStateChangeTime = Time.time;   
     }
@@ -37,7 +38,6 @@ public class LaserGun : MonoBehaviour
             return;
         }
 
-
         laser.SetActive(true);
 
         RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.right, maxLaserDistance, groundLayer);
@@ -45,15 +45,15 @@ public class LaserGun : MonoBehaviour
         Vector3 endPoint;
         if (hit.collider != null)
         {
-            endPoint = new Vector3(hit.point.x, hit.point.y) + transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+            endPoint = new Vector3(hit.point.x, hit.point.y) - transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
         }
         else
         {
-            endPoint = transform.position  - transform.right * maxLaserDistance;
+            endPoint = -transform.right * maxLaserDistance;
         }
-        Vector3 gunEdgePosition = transform.position - transform.right * GetComponent<SpriteRenderer>().bounds.size.x;
+        Vector3 gunEdgePosition = -transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
 
-        laser.transform.position = (gunEdgePosition + endPoint) / 2f;
+        laser.transform.position = transform.TransformPoint( (gunEdgePosition + endPoint - transform.position) / 2f ) ;
 
 
         //Vector3 direction = endPoint - transform.position;
