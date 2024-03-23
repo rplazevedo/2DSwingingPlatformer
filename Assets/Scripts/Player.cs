@@ -212,6 +212,6 @@ public class Player : MonoBehaviour
     {
         transform.position = startPosition;
         body.velocity = Vector2.zero;
-        //grapplingHook.DetachGrapple();
+        grapplingHook.DetachGrapple();
     }    
 }

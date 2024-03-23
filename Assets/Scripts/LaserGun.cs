@@ -40,7 +40,7 @@ public class LaserGun : MonoBehaviour
 
         laser.SetActive(true);
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.right, maxLaserDistance, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.right, maxLaserDistance, groundLayer);
 
         Vector3 endPoint;
         if (hit.collider != null)
@@ -49,9 +49,9 @@ public class LaserGun : MonoBehaviour
         }
         else
         {
-            endPoint = transform.position + transform.right * maxLaserDistance;
+            endPoint = transform.position - transform.right * maxLaserDistance;
         }
-        Vector3 gunEdgePosition = transform.position + transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        Vector3 gunEdgePosition = transform.position - transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
 
         laser.transform.position = (gunEdgePosition + endPoint) / 2f;
 
