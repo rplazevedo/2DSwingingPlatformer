@@ -45,13 +45,13 @@ public class LaserGun : MonoBehaviour
         Vector3 endPoint;
         if (hit.collider != null)
         {
-            endPoint = hit.point;
+            endPoint = new Vector3(hit.point.x, hit.point.y) + transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
         }
         else
         {
-            endPoint = transform.position - transform.right * maxLaserDistance;
+            endPoint = transform.position  - transform.right * maxLaserDistance;
         }
-        Vector3 gunEdgePosition = transform.position - transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        Vector3 gunEdgePosition = transform.position - transform.right * GetComponent<SpriteRenderer>().bounds.size.x;
 
         laser.transform.position = (gunEdgePosition + endPoint) / 2f;
 
