@@ -2142,6 +2142,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laserPrefab: {fileID: 2166726503248269563, guid: 780b37bbbaa58c84a93de2b0698ac249, type: 3}
+  laserCooldown: 2
+  maxLaserDistance: 100
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1001 &2106513845
 PrefabInstance:
   m_ObjectHideFlags: 0

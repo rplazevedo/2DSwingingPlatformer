@@ -1,9 +1,13 @@
+using System.Net;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class LaserGun : MonoBehaviour
 {
     [SerializeField] private GameObject laserPrefab;
     [SerializeField] private float laserCooldown = 2f;
+    public float maxLaserDistance = 100f;
+    public LayerMask groundLayer;
 
     private GameObject laser;
     private float lastLaserStateChangeTime;
@@ -27,6 +31,36 @@ public class LaserGun : MonoBehaviour
 
     private void ToggleLaser()
     {
-        laser.SetActive(!laser.activeSelf);
+        if(laser.activeSelf)
+        {
+            laser.SetActive(false);
+            return;
+        }
+
+
+        laser.SetActive(true);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.right, maxLaserDistance, groundLayer);
+
+        Vector3 endPoint;
+        if (hit.collider != null)
+        {
+            endPoint = hit.point;
+        }
+        else
+        {
+            endPoint = transform.position + transform.right * maxLaserDistance;
+        }
+        Vector3 gunEdgePosition = transform.position + transform.right * GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+
+        laser.transform.position = (gunEdgePosition + endPoint) / 2f;
+
+
+        //Vector3 direction = endPoint - transform.position;
+        //float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        //laser.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        float distance = Vector3.Distance(transform.position, endPoint);
+        laser.transform.localScale = new Vector3(distance, laser.transform.localScale.y, laser.transform.localScale.y);
     }
 }
